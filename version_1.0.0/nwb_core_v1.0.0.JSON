@@ -1,0 +1,1698 @@
+{
+    "core": {
+        "structures": {
+            "extracellular_ephys/": {
+                "<electrode_group_X>/": {
+                    "device": {
+                        "references": "/general/devices/devices/<device_X>/",
+                        "description": "Name of device(s) in /general/devices",
+                        "data_type": "text"
+                    },
+                    "location": {
+                        "description": "Description of probe location",
+                        "data_type": "text"
+                    },
+                    "description": {
+                        "description": "Description of probe or shank",
+                        "data_type": "text"
+                    },
+                    "_description": "One folder for each electrode group.  Name matches group_id"
+                },
+                "impedance": {
+                    "description": "Impediance of electodes in electrode_map",
+                    "data_type": "text",
+                    "dimensions": [
+                        "electrode_number"
+                    ]
+                },
+                "filtering": {
+                    "description": "Description of filtering used.  If this changes between TimeSeries, filter description should be stored as a text attribute for each TimeSeries.",
+                    "data_type": "text"
+                },
+                "electrode_group": {
+                    "references": "<electrode_group_X>/",
+                    "description": "Identification string for probe, shank or tetrode",
+                    "data_type": "text",
+                    "dimensions": [
+                        "electrode_number"
+                    ]
+                },
+                "electrode_map": {
+                    "xyz": {
+                        "type": "struct",
+                        "components": [
+                            {
+                                "alias": "x",
+                                "unit": "meter"
+                            },
+                            {
+                                "alias": "y",
+                                "unit": "meter"
+                            },
+                            {
+                                "alias": "z",
+                                "unit": "meter"
+                            }
+                        ]
+                    },
+                    "description": "Physical location of electrode, x,y,z in meters",
+                    "data_type": "number",
+                    "dimensions": [
+                        "electrode_number",
+                        "xyz"
+                    ]
+                }
+            },
+            "protocol": {
+                "description": "Experimetnal protocol, if applicable (e.g., IACUC)",
+                "data_type": "text"
+            },
+            "slices": {
+                "description": "Description of slices, including information about preparation thickness, orientation, temperature and bath solution",
+                "data_type": "text"
+            },
+            "<TimeSeries>/": {
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "data": {
+                    "dimensions": [
+                        "timeIndex"
+                    ],
+                    "data_type": "number"
+                },
+                "description": "General purpose time series",
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "LFP/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<ElectricalSeries>/": {
+                        "data": {
+                            "semantic_type": "+LFP"
+                        }
+                    }
+                },
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+LFP",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<AnnotationSeries>/": {
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "data": {
+                    "dimensions": [
+                        "timeIndex"
+                    ],
+                    "data_type": "text"
+                },
+                "description": "Stores user annotations made during an experiment.",
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,AnnotationSeries",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<image_X>": {
+                "attributes": {
+                    "neurodata_type": {
+                        "value": "image",
+                        "data_type": "text"
+                    },
+                    "description": {
+                        "description": "Descriptive text describing the image",
+                        "data_type": "text"
+                    },
+                    "format": {
+                        "description": "Format of the image (eg, 'png', 'avi')",
+                        "data_type": "text"
+                    }
+                },
+                "description": "Documentation image (or movie).  Dimensions left unspecified",
+                "data_type": "any"
+            },
+            "<ImageMaskSeries>/": {
+                "merge": [
+                    "<imageSeries>/"
+                ],
+                "masked_imageseries/": {
+                    "description": "Link to ImageSeries that mask is applied to"
+                },
+                "masked_imageseries_path": {
+                    "description": "Path to linked ImageSeries",
+                    "data_type": "text"
+                },
+                "description": "An alpha mask that is applied to a presented visual stimulus.",
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,ImageSeries,ImageMaskSeries",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<module>/": {
+                "attributes": {
+                    "interfaces": {
+                        "data_type": "text"
+                    },
+                    "neurodata_type": {
+                        "value": "Module",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "neurodata_version": {
+                "description": "File version string. This will be the name of the format with trailing major, minor and patch numbers (e.g., NWB-0.4.18)",
+                "data_type": "text"
+            },
+            "EventWaveform/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<SpikeEventSeries>/*": {}
+                },
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+EventWaveform",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<timestamps>/": {
+                "starting_time?": {
+                    "attributes": {
+                        "rate": {
+                            "description": "Data sampling or stimulus presentation rate (Hz)",
+                            "data_type": "float"
+                        },
+                        "unit": {
+                            "value": "Seconds (all neurodata timestamps are in seconds)",
+                            "data_type": "text"
+                        }
+                    },
+                    "unit": "second",
+                    "description": "In some edge cases it is not practical to store every timestamp (e.g., single-cell patch-clamp data sampled at 200KHz).  For these cases, a field called starting_time is used instead of timestamps. The field starting_time stores the starting time of the timeseries along with the exact sampling rate.",
+                    "data_type": "float"
+                },
+                "control?": {
+                    "references": "control_description.num_control_values",
+                    "description": "Numerical labels that apply to each element in data[]. Optional field. If present, the control array should have the same number of elements as data[]",
+                    "data_type": "int",
+                    "dimensions": [
+                        "timeIndex"
+                    ]
+                },
+                "control_description?": {
+                    "dimensions": [
+                        "num_control_values"
+                    ],
+                    "data_type": "text",
+                    "description": "Description of each control value.  Array length should be as long as the highest number in control minus one, generating an zero-based indexed array for control values"
+                },
+                "description": "Times that are synced to data",
+                "timestamps": {
+                    "description": "Timestamps for samples stored in data",
+                    "data_type": "float",
+                    "semantic_type": "timestamps",
+                    "attributes": {
+                        "rate": {
+                            "description": "Sampling rate if known",
+                            "data_type": "float"
+                        },
+                        "interval": {
+                            "value": 1,
+                            "data_type": "int"
+                        }
+                    },
+                    "unit": "Seconds (all neurodata timestamps are in seconds)",
+                    "dimensions": [
+                        "timeIndex"
+                    ]
+                },
+                "attributes": {
+                    "source": {
+                        "value": "Unspecified source",
+                        "data_type": "text"
+                    },
+                    "neurodata_type": {
+                        "value": "TimeSeries",
+                        "data_type": "text"
+                    },
+                    "ancestry": {
+                        "value": "TimeSeries",
+                        "data_type": "text"
+                    },
+                    "description": {
+                        "data_type": "text"
+                    },
+                    "data_link": {
+                        "description": "List of the paths of all TimeSeries that share a hard link to the same data field.  Attribute is only present if links are present. List should include the path to this TimeSeries also",
+                        "data_type": "text"
+                    },
+                    "help": {
+                        "description": "Displays the 'description' field of the time series stored in the specification file/language",
+                        "data_type": "text"
+                    },
+                    "missing_fields": {
+                        "description": "List of fields defined as 'required' parts of the TimeSeries that are missing",
+                        "data_type": "text"
+                    },
+                    "comments": {
+                        "data_type": "text"
+                    },
+                    "timestamp_link": {
+                        "description": "List of the paths of all TimeSeries that share a hard link to the same timestamps field.  Attribute is only present if links are present. List should include the path to this TimeSeries also",
+                        "data_type": "text"
+                    }
+                },
+                "num_samples": {
+                    "description": "Number of samples valid for timestamp",
+                    "data_type": "int"
+                },
+                "data": {
+                    "attributes": {
+                        "conversion": {
+                            "data_type": "float"
+                        },
+                        "resolution": {
+                            "data_type": "number"
+                        },
+                        "unit": {
+                            "data_type": "text"
+                        }
+                    }
+                },
+                "sync/?": {
+                    "description": "Lab specific time and sync information"
+                }
+            },
+            "BehavioralTimeSeries/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<TimeSeries>/*": {
+                        "data": {
+                            "semantic_type": "+BehavioralTimeSeries"
+                        }
+                    }
+                },
+                "Description": "Behavoioral time series",
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+BehavorialEpochs",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "optophysiology/": {
+                "<imaging_plane_X>/*": {
+                    "reference_frame": {
+                        "description": "Describes position and reference frame of manifold based on position of first element in manifold.",
+                        "data_type": "text"
+                    },
+                    "manifold": {
+                        "attributes": {
+                            "conversion": {
+                                "value": 1.0,
+                                "data_type": "float"
+                            },
+                            "unit": {
+                                "value": "Meter",
+                                "data_type": "text"
+                            }
+                        },
+                        "description": "Physical position of each pixel.",
+                        "data_type": "float",
+                        "dimensions": [
+                            "height",
+                            "weight",
+                            "xyz"
+                        ]
+                    },
+                    "description": "Folder one of possibly many folders describing an imaging plane. Name is arbitrary but should be meaningful. It is referenced by TwoPhotonSeries and also ImageSegmentation and DfOverF interfaces.",
+                    "imaging_rate": {
+                        "data_type": "text"
+                    },
+                    "device": {
+                        "references": "/general/devices/<device_X>/",
+                        "description": "Name of device in /general/devices",
+                        "data_type": "text"
+                    },
+                    "<channel_X>/": {
+                        "description": {
+                            "description": "Any notes or comments about the channel",
+                            "data_type": "text"
+                        },
+                        "emission_lambda": {
+                            "description": "Emission lambda for channel",
+                            "data_type": "text"
+                        }
+                    },
+                    "xyz": {
+                        "type": "struct",
+                        "components": [
+                            {
+                                "alias": "x",
+                                "unit": "meter"
+                            },
+                            {
+                                "alias": "y",
+                                "unit": "meter"
+                            },
+                            {
+                                "alias": "z",
+                                "unit": "meter"
+                            }
+                        ]
+                    },
+                    "excitation_lambda": {
+                        "description": "Excitation wavelength",
+                        "data_type": "text"
+                    },
+                    "indicator": {
+                        "description": "Calcium indicator",
+                        "data_type": "text"
+                    },
+                    "location": {
+                        "description": "Location of image plane",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "UnitTimes/": {
+                "unit_list": {
+                    "references": "<unit_N>/",
+                    "description": "List of units present",
+                    "data_type": "text",
+                    "dimensions": [
+                        "num_units"
+                    ]
+                },
+                "merge": [
+                    "<interface>/"
+                ],
+                "description": "Event times of observed units (e.g. cell, synapse, etc.)",
+                "<unit_N>/*": {
+                    "unit_description": {
+                        "description": "Description of the unit (e.g. cell type)",
+                        "data_type": "text"
+                    },
+                    "source?": {
+                        "description": "Name, path or description of where unit times originatd",
+                        "data_type": "text"
+                    },
+                    "times": {
+                        "unit": "second",
+                        "semantic_type": "timestamps",
+                        "description": "Spike time for the units",
+                        "data_type": "number",
+                        "dimensions": [
+                            "eventIndex"
+                        ]
+                    }
+                },
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+UnitTimes",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "surgery": {
+                "description": "Narrative description about surgery/surgeries, including date(s) and who performed surgery",
+                "data_type": "text"
+            },
+            "<SpikeEventSeries>/": {
+                "description": "Stores 'snapshots' of spike events (e.g. threshold crossings).",
+                "source": {
+                    "description": "Source of events (eg, timeseries, hardware) and description of event definition",
+                    "data_type": "text"
+                },
+                "electrode_idx": {
+                    "references": "/general/extracellular_ephys/electrode_map.electrode_number",
+                    "description": "Indicies to electrodes in general/extracellular_ephys/electrode_map",
+                    "data_type": "int",
+                    "dimensions": [
+                        "channelIndex"
+                    ]
+                },
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries, SpikeEventSeries",
+                        "data_type": "text"
+                    }
+                },
+                "data": {
+                    "unit": "volt",
+                    "semantic_type": "SpikeEventSeries",
+                    "description": "Spike waveforms",
+                    "data_type": "number",
+                    "dimensions": [
+                        "timeIndex",
+                        "channelIndex",
+                        "sampleIndex"
+                    ]
+                }
+            },
+            "session_description": {
+                "description": "One or two sentences describing the experiment and data in the file",
+                "data_type": "text"
+            },
+            "data_collection": {
+                "description": "Notes about data collection and analysis",
+                "data_type": "text"
+            },
+            "Position/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<SpatialSeries>/*": {}
+                },
+                "description": "Position data, whether along the x, x/y or x/y/z axis.",
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+Position",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<ImageSeries>/": {
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "description": "Stores images or path to images on file system",
+                "format": {
+                    "description": "Format of image. If this is 'external' then the field external_file contains the path or URL information to that file. For tiff, png, jpg, etc, the binary representation of the image is stored in data. If the format is raw then the fields bit_per_pixel and dimension are used. For raw images, only a single channel is stored (eg, red).",
+                    "data_type": "text"
+                },
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,ImageSeries",
+                        "data_type": "text"
+                    }
+                },
+                "bits_per_pixel": {
+                    "description": "Number of bit per image pixel",
+                    "data_type": "number"
+                },
+                "data": {
+                    "description": "Either binary data containing image or empty",
+                    "data_type": "number",
+                    "dimensions": [
+                        "frame",
+                        "x",
+                        "y"
+                    ]
+                },
+                "dimension": {
+                    "description": "Number of pixels on x, y, (and z) axes",
+                    "data_type": "int",
+                    "dimensions": [
+                        "rank"
+                    ]
+                },
+                "external_file?": {
+                    "description": "Path or URL to external file. Field only present if format=external",
+                    "data_type": "text"
+                }
+            },
+            "devices/": {
+                "<device_X>*": {
+                    "description": "One of possibly many. Information about device and device description.",
+                    "data_type": "text"
+                },
+                "description": "Description of hardware devices used during experiment."
+            },
+            "FeatureExtraction/": {
+                "description": {
+                    "description": "Description of each feature",
+                    "data_type": "text",
+                    "dimensions": [
+                        "featureIndex"
+                    ]
+                },
+                "electrode_idx": {
+                    "references": "/general/extracellular_ephys/electrode_map.electrode_number",
+                    "description": "Indicies to electrodes in general/extracellular_ephys/electrode_map",
+                    "data_type": "int",
+                    "dimensions": [
+                        "channelIndex"
+                    ]
+                },
+                "times": {
+                    "unit": "second",
+                    "semantic_type": "timestamps",
+                    "description": "Time of events that features correspond to",
+                    "data_type": "number",
+                    "dimensions": [
+                        "eventIndex"
+                    ]
+                },
+                "merge": [
+                    "<interface>/"
+                ],
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+FeatureExtraction",
+                        "data_type": "text"
+                    }
+                },
+                "features": {
+                    "description": "Array of features extracted from each event",
+                    "data_type": "number",
+                    "dimensions": [
+                        "eventIndex",
+                        "channelIndex",
+                        "featureIndex"
+                    ]
+                }
+            },
+            "FilteredEphys/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<ElectricalSeries>/*": {}
+                },
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+FilteredEphys",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "PupilTracking/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<TimeSeries>/*": {
+                        "data": {
+                            "semantic_type": "PupilTracking"
+                        }
+                    }
+                },
+                "description": "Eye-tracking data, representing pupil size.",
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+PupilTracking",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<AbstractFeatureSeries>/": {
+                "description": "Abstract features, such as quantitative descriptions of sensory stimuli.",
+                "feature_units": {
+                    "description": "Units of each feature",
+                    "data_type": "text",
+                    "dimensions": [
+                        "featureIndex"
+                    ]
+                },
+                "feature": {
+                    "description": "Description of the features represented in TimeSeries::data",
+                    "data_type": "text",
+                    "dimensions": [
+                        "timeIndex",
+                        "featureIndex"
+                    ]
+                },
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,AbstractFeatureSeries",
+                        "data_type": "text"
+                    }
+                },
+                "data": {
+                    "dimensions": [
+                        "timeIndex",
+                        "featureIndex"
+                    ],
+                    "data_type": "number"
+                }
+            },
+            "EventDetection/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "description": "Detected spike events from voltage trace(s).",
+                "source_electricalseries_path": {
+                    "references": "/",
+                    "description": "Path to linked ElectricalSeries",
+                    "data_type": "text"
+                },
+                "detection_method": {
+                    "description": "Description of how events were detected, such as voltage threshold, or dV/dT threshold, as well as relevant values",
+                    "data_type": "text"
+                },
+                "times": {
+                    "unit": "second",
+                    "semantic_type": "timestamps",
+                    "description": "Spike time for the units",
+                    "data_type": "number",
+                    "dimensions": [
+                        "eventIndex"
+                    ]
+                },
+                "source_idx": {
+                    "references": "source_electrical_series/data.timeIndex",
+                    "description": "Indices into source TimeSeries::data array corresponding to time of event.",
+                    "data_type": "int",
+                    "dimensions": [
+                        "eventIndex"
+                    ]
+                },
+                "source_electricalseries/": {
+                    "description": "HDF5 link to TimeSeries that this data was calculated from."
+                },
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+EventDection",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "notes": {
+                "description": "Notes about the experiment, especially things particular to this experiment",
+                "data_type": "text"
+            },
+            "<RoiResponseSeries>/": {
+                "description": "ROI responses over an imaging plane. Each row in data[] should correspond to the signal from one ROI.",
+                "segmentation_interface/": {
+                    "description": "HDF5 link to image segmentation module defining ROIs"
+                },
+                "segmentation_interface_path": {
+                    "description": "Path to segmentation module",
+                    "data_type": "text"
+                },
+                "roi_names": {
+                    "description": "List of ROIs represented, one name for each row of data[]",
+                    "data_type": "text",
+                    "dimensions": [
+                        "RoiIndex"
+                    ]
+                },
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,RoiResponseSeries>",
+                        "data_type": "text"
+                    }
+                },
+                "data": {
+                    "semantic_type": "RoiResponseSeries",
+                    "description": "Signals from ROIs",
+                    "data_type": "number",
+                    "dimensions": [
+                        "timeIndex",
+                        "RoiIndex"
+                    ]
+                }
+            },
+            "stimulus": {
+                "description": "Notes about stimuli, such as how and where presented",
+                "data_type": "text"
+            },
+            "<SpatialSeries>/": {
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "reference_frame": {
+                    "description": "Description defining what exactly 'straight-ahead' means",
+                    "data_type": "text"
+                },
+                "data": {
+                    "semantic_type": "RoiResponseSeries",
+                    "description": "2-D array storing position or direction relative to some reference frame.",
+                    "data_type": "number",
+                    "dimensions": [
+                        "timeIndex",
+                        "featureIndex"
+                    ]
+                },
+                "description": "Direction, e.g., of gaze or travel, or position.",
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,SpatialSeries>",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "BehavioralEvents/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<TimeSeries>/*": {
+                        "data": {
+                            "semantic_type": "+BehavorialEvents"
+                        }
+                    }
+                },
+                "Description": "TimeSeries for storing behavioral irregular events",
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+BehavorialEvents",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "EyeTracking/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<SpatialSeries>/*": {}
+                },
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+EyeTracking",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "related_publications": {
+                "description": "Publication information, such as PMID, DOI, URL, etc",
+                "data_type": "text"
+            },
+            "<PatchClampSeries>/": {
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "electrode_name": {
+                    "references": "/general/intracellular_ephys/<electrode_X>/",
+                    "description": "Name of electrode entry in /general/intracellular_ephys",
+                    "data_type": "text"
+                },
+                "data": {
+                    "semantic_type": "PatchClampSeries",
+                    "description": "Recorded voltage or current",
+                    "data_type": "number",
+                    "dimensions": [
+                        "timeIndex"
+                    ]
+                },
+                "description": "Stores stimulus or response current or voltage.",
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,PatchClampSeries",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<IntervalSeries>/": {
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "data": {
+                    "unit": "none",
+                    "semantic_type": "IntervalSeries",
+                    "description": ">0 if interval started, <0 if interval ended",
+                    "data_type": "int",
+                    "dimensions": [
+                        "timeIndex"
+                    ]
+                },
+                "description": "Stores intervals of data.",
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,IntervalSeries",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "institution": {
+                "description": "Institution(s) where experiment was performed",
+                "data_type": "text"
+            },
+            "<OptogeneticSeries>/": {
+                "site": {
+                    "references": "/general/optogenetics/<site_X>/",
+                    "description": "Name of site description in general/optogentics",
+                    "data_type": "text"
+                },
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "data": {
+                    "unit": "watt",
+                    "description": "Applied power for optogenetic stimulus",
+                    "data_type": "number",
+                    "dimensions": [
+                        "timeIndex"
+                    ]
+                },
+                "description": "Optogenetic stimulus.",
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,OptogeneticSeries",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<VoltageClampSeries>/": {
+                "description": "Stores current data recorded from intracellular voltage-clamp recordings. A corresponding VoltageClampStimulusSeries (stored separately as a stimulus) is used to store the voltage injected. The VoltageClampSeries has all of the datasets of an PatchClampSeries as well as the following:",
+                "capacitance_slow": {
+                    "unit": "Farad",
+                    "description": "Capacitance slow",
+                    "data_type": "float"
+                },
+                "resistance_comp_bandwidth": {
+                    "unit": "Hz",
+                    "description": "resistance_comp_bandwidth",
+                    "data_type": "number"
+                },
+                "gain": {
+                    "unit": "Volt/Amp",
+                    "description": "gain",
+                    "data_type": "float"
+                },
+                "whole_cell_series_resistance_comp": {
+                    "unit": "Ohm",
+                    "description": "whole_cell_series_resistance_comp",
+                    "data_type": "float"
+                },
+                "merge": [
+                    "<PatchClampSeries>/"
+                ],
+                "resistance_comp_prediction": {
+                    "unit": "%",
+                    "description": "resistance_comp_prediction",
+                    "data_type": "number"
+                },
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,PatchClampSeries,VoltageClampSeries",
+                        "data_type": "text"
+                    }
+                },
+                "resistance_comp_correction": {
+                    "unit": "%",
+                    "description": "resistance_comp_correction",
+                    "data_type": "number"
+                },
+                "whole_cell_capacitance_comp": {
+                    "unit": "Farad",
+                    "description": "whole_cell_capacitance_comp",
+                    "data_type": "float"
+                },
+                "capacitance_fast": {
+                    "unit": "Farad",
+                    "description": "Capacitance fast",
+                    "data_type": "float"
+                }
+            },
+            "lab": {
+                "description": "Lab where experiment was performed",
+                "data_type": "text"
+            },
+            "CompassDirection/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<SpatialSeries>/*": {}
+                },
+                "description": "A SpatialSeries object representing a floating point value for theta.",
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+CompassDirection",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<IndexSeries>/": {
+                "indexed_timesereis_path": {
+                    "description": "Path to linked TimeSeries"
+                },
+                "description": "Stores indices to image frames stored in an ImageSeries.",
+                "indexed_timeseries/": {
+                    "description": "HDF5 link to TimeSeries containing images that are indexed"
+                },
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,IndexSeries",
+                        "data_type": "text"
+                    }
+                },
+                "data": {
+                    "references": "indexed_timeseries/data.timeIndex",
+                    "dimensions": [
+                        "timeIndex"
+                    ],
+                    "data_type": "int"
+                }
+            },
+            "virus": {
+                "description": "Information about virus(es) used in experiments, including virus ID, source, date made, injection location, volume, etc",
+                "data_type": "text"
+            },
+            "BehavioralEpochs/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<IntervalSeries>/*": {
+                        "data": {
+                            "semantic_type": "+BehavorialEpochs"
+                        }
+                    }
+                },
+                "Description": "TimeSeries for storing behavoioral epochs",
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+BehavorialEpochs",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "experimenter": {
+                "description": "Name of person who performed the experiment",
+                "data_type": "text"
+            },
+            "<interface>/": {
+                "attributes": {
+                    "source": {
+                        "references": "/",
+                        "description": "Path to the origin of the data represented in this interface",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<CurrentClampStimulusSeries>/": {
+                "merge": [
+                    "<PatchClampSeries>/"
+                ],
+                "description": "Aliases to standard PatchClampSeries. Its functionality is to better tag PatchClampSeries for machine (and human) readability of the file.",
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,PatchClampSeries,CurrentClampStimulusSeries",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<TwoPhotonSeries>/": {
+                "description": "A special case of optical imaging.",
+                "merge": [
+                    "<ImageSeries>/"
+                ],
+                "scan_line_rate": {
+                    "data_type": "number",
+                    "description": "Scan lines per second (Hz)",
+                    "unit": "Hz"
+                },
+                "pmt_gain": {
+                    "description": "Photomultiplier gain",
+                    "data_type": "number"
+                },
+                "field_of_view": {
+                    "whd": {
+                        "type": "struct",
+                        "components": [
+                            {
+                                "alias": "width",
+                                "unit": "meter"
+                            },
+                            {
+                                "alias": "height",
+                                "unit": "meter"
+                            },
+                            {
+                                "alias": "depth",
+                                "unit": "meter"
+                            }
+                        ]
+                    },
+                    "description": "Width, height and depth of image, or imaged area (meters)",
+                    "data_type": "float",
+                    "dimensions": [
+                        "whd"
+                    ]
+                },
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,ImageSeries,TwoPhotonSeries",
+                        "data_type": "text"
+                    }
+                },
+                "imaging_plane": {
+                    "references": "/general/optophysiology/<imaging_plane_X>",
+                    "description": "Name of imaging plane description in /general/optophysiology",
+                    "data_type": "text"
+                }
+            },
+            "session_start_time": {
+                "description": "Date and time experiment was started was created, UTC (ISO 8601). This serves as the reference time for data in the file. All timestamps in a neurodata file are stored as seconds after this reference time",
+                "data_type": "text"
+            },
+            "DfOverF/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<RoiResponseSeries>/*": {}
+                },
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+DfOverF",
+                        "data_type": "text"
+                    }
+                },
+                "description": "dF/F information about a region of interest (ROI). Storage hierarchy of dF/F should be the same as for segmentation (ie, same names for ROIs and for image planes). DfOverF/"
+            },
+            "pharmacology": {
+                "description": "Description of drugs used, including how and when they were administered",
+                "data_type": "text"
+            },
+            "experiment_description": {
+                "description": "General description of the experiment",
+                "data_type": "text"
+            },
+            "subject/": {
+                "genotype": {
+                    "description": "Genotype of subject",
+                    "data_type": "text"
+                },
+                "weight": {
+                    "description": "Weight at time of experiment, at time of surgery and at other important times",
+                    "data_type": "text"
+                },
+                "age": {
+                    "description": "Age of subject",
+                    "data_type": "text"
+                },
+                "sex": {
+                    "description": "Gender of subject",
+                    "data_type": "text"
+                },
+                "species": {
+                    "description": "Species of subject",
+                    "data_type": "text"
+                },
+                "subject_id": {
+                    "description": "ID of animal/person used/participating in experiment (lab convention)",
+                    "data_type": "text"
+                },
+                "description": {
+                    "description": "Description of subject and where subject came from (e.g., breeder, if animal)",
+                    "data_type": "text"
+                }
+            },
+            "<VoltageClampStimulusSeries>/": {
+                "merge": [
+                    "<PatchClampSeries>/"
+                ],
+                "description": "Aliases to standard PatchClampSeries. Its functionality is to better tag PatchClampSeries for machine (and human) readability of the file.",
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,PatchClampSeries,VoltageClampStimulusSeries",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "epochs/": {
+                "<epoch_X>/": {
+                    "description": {
+                        "data_type": "text"
+                    },
+                    "tags": {
+                        "description": "User defined tags that help characterize an epoch",
+                        "data_type": "text",
+                        "dimensions": [
+                            "num_tags"
+                        ]
+                    },
+                    "start_time": {
+                        "unit": "second",
+                        "description": "Start time of epoch, in seconds",
+                        "data_type": "number"
+                    },
+                    "stop_time": {
+                        "unit": "second",
+                        "description": "Stop time of epoch, in seconds",
+                        "data_type": "float"
+                    },
+                    "attributes": {
+                        "neurodata_type": {
+                            "value": "Epoch",
+                            "data_type": "text"
+                        }
+                    },
+                    "<timeseries_X>/*": {
+                        "count": {
+                            "description": "Number of entries in TimeSeries::data that overlaps with this epoch",
+                            "data_type": "int"
+                        },
+                        "timeseries/": {
+                            "description": "Link to timeseries.  Target timeseries can be anywhere in the file"
+                        },
+                        "description": "Reference for zero or more time series that overlap with epoch",
+                        "idx_start": {
+                            "description": "First index in timeseries::data that overlaps with this epoch",
+                            "data_type": "int"
+                        }
+                    }
+                },
+                "description": "Top-level epochs group",
+                "links": {
+                    "description": "A human-readable list mapping TimeSeries entries in the epoch to the path of the TimeSeries within the file.",
+                    "data_type": "text"
+                },
+                "tags": {
+                    "description": "A list of the different tags used by epochs.",
+                    "data_type": "text",
+                    "dimensions": [
+                        "num_tags"
+                    ]
+                }
+            },
+            "ImageSegmentation/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+ImageSegmentation",
+                        "data_type": "text"
+                    }
+                },
+                "<image_plane>/*": {
+                    "roi_list": {
+                        "references": "<roi_name>/",
+                        "description": "List of ROIs in this imaging plane",
+                        "data_type": "text",
+                        "dimensions": [
+                            "num_rois"
+                        ]
+                    },
+                    "<roi_name>/*": {
+                        "img_mask": {
+                            "description": "ROI mask, represented in 2D ([y][x]) intensity image",
+                            "data_type": "number",
+                            "dimensions": [
+                                "numx",
+                                "numy"
+                            ]
+                        },
+                        "roi_description": {
+                            "description": "Description of this ROI",
+                            "data_type": "text"
+                        },
+                        "pix_mask": {
+                            "attributes": {
+                                "weight": {
+                                    "description": "Weight of each pixel",
+                                    "data_type": "int"
+                                }
+                            },
+                            "description": "List of pixels (x,y) that compose mask",
+                            "data_type": "float",
+                            "dimensions": [
+                                "2",
+                                "numPixels"
+                            ]
+                        }
+                    },
+                    "description": {
+                        "description": "Description of image plane, recording wavelength, depth, etc",
+                        "data_type": "text"
+                    },
+                    "reference_images/": {
+                        "include": {
+                            "<ImageSeries>/*": {}
+                        }
+                    },
+                    "imaging_plane_name": {
+                        "description": "Name of imaging plane under general/optophysiology",
+                        "data_type": "text"
+                    }
+                },
+                "description": "Stores pixels in an image that represent different regions of interest (ROIs)."
+            },
+            "session_id": {
+                "description": "Lab-specific ID for the session.",
+                "data_type": "text"
+            },
+            "<ElectricalSeries>/": {
+                "electrode_idx": {
+                    "references": "/general/extracellular_ephys/electrode_map.electrode_number",
+                    "description": "Indicies to electrodes in general/extracellular_ephys/electrode_map",
+                    "data_type": "int",
+                    "dimensions": [
+                        "channelIndex"
+                    ]
+                },
+                "merge": [
+                    "<timestamps>/"
+                ],
+                "data": {
+                    "unit": "volt",
+                    "semantic_type": "ElectricalSeries",
+                    "description": "Recorded voltage data",
+                    "data_type": "number",
+                    "dimensions": [
+                        "timeIndex",
+                        "channelIndex"
+                    ]
+                },
+                "description": "Acquired voltage data from extracellular recordings.",
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries, ElectricalSeries",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "MotionCorrection/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "<image stack name>/": {
+                    "corrected/": {
+                        "include": {
+                            "<ImageSeries>/*": {}
+                        },
+                        "description": "Image stack with frames shifted to the common coordinates"
+                    },
+                    "<original>/": {
+                        "description": "HDF5 Link to image series that is being registered"
+                    },
+                    "xy_translation/": {
+                        "include": {
+                            "<TimeSeries>/*": {}
+                        },
+                        "description": "Stores the x,y delta necessary to align each frame to the common coordinates"
+                    }
+                },
+                "description": "An image stack where all frames are shifted (registered) to a common coordinate system, to account for movement and drift between frames.",
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+MotionCorrection",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "<CurrentClampSeries>/": {
+                "merge": [
+                    "<PatchClampSeries>/"
+                ],
+                "description": "Stores voltage data recorded from intracellular current-clamp recordings. A corresponding CurrentClampStimulusSeries (stored separately as a stimulus) is used to store the current injected. The CurrentClampSeries has all of the datasets of an PatchClampSeries as well as the following:",
+                "gain": {
+                    "unit": "Volt/Volt",
+                    "description": "gain",
+                    "data_type": "float"
+                },
+                "bias_current": {
+                    "unit": "Amp",
+                    "description": "Bias current",
+                    "data_type": "float"
+                },
+                "bridge_balance": {
+                    "unit": "Ohm",
+                    "description": "Bridge Balance",
+                    "data_type": "float"
+                },
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,PatchClampSeries,CurrentClampSeries",
+                        "data_type": "text"
+                    }
+                },
+                "capacitance_compensation": {
+                    "unit": "Farad",
+                    "description": "Capacitance compensation",
+                    "data_type": "float"
+                },
+                "resistance_compensation": {
+                    "unit": "Ohms",
+                    "description": "Resistance compensation",
+                    "data_type": "float"
+                }
+            },
+            "optogenetics/": {
+                "<site_X>/*": {
+                    "device": {
+                        "references": "/general/devices/<device_X>/",
+                        "description": "Name of device in /general/devices",
+                        "data_type": "text"
+                    },
+                    "excitation_lambda": {
+                        "description": "Excitation wavelength",
+                        "data_type": "text"
+                    },
+                    "location": {
+                        "description": "Location of stimulation site",
+                        "data_type": "text"
+                    },
+                    "description": {
+                        "data_type": "text"
+                    },
+                    "_description": "One of possibly many folders describing an describing an optogenetic stimuluation site."
+                }
+            },
+            "<OpticalSeries>/": {
+                "distance": {
+                    "unit": "meter",
+                    "description": "Distance from camera/monitor to target/eye",
+                    "data_type": "float"
+                },
+                "orientation": {
+                    "description": "Description of image relative to some reference frame (e.g., which way is up). Must also specify frame of reference.",
+                    "data_type": "text"
+                },
+                "merge": [
+                    "<ImageSeries>/"
+                ],
+                "field_of_view": {
+                    "fov": {
+                        "type": "structure",
+                        "components": [
+                            {
+                                "alias": "width",
+                                "unit": "meter"
+                            },
+                            {
+                                "alias": "height",
+                                "unit": "meter"
+                            },
+                            {
+                                "alias": "depth",
+                                "optional": true,
+                                "unit": "meter"
+                            }
+                        ]
+                    },
+                    "description": "Width, height and depto of image, or imaged area (meters)",
+                    "data_type": "float",
+                    "dimensions": [
+                        "fov"
+                    ]
+                },
+                "attributes": {
+                    "ancestry": {
+                        "value": "TimeSeries,ImageSeries,OpticalSeries",
+                        "data_type": "text"
+                    }
+                },
+                "description": "Image data that is presented or recorded. A stimulus template movie will be stored only as an image."
+            },
+            "file_create_date": {
+                "attributes": {
+                    "modification_time": {
+                        "description": "Times that the file was modified.  Only present if an existing file was modified.  Each modificaiton time stored in ISO 8601 format.",
+                        "data_type": "text"
+                    }
+                },
+                "description": "Date and time file was created, UTC (ISO 8601)",
+                "data_type": "text"
+            },
+            "intracellular_ephys/": {
+                "filtering": {
+                    "description": "Description of filtering used, including filter type, parameters, fall-off, etc. If this changes between Time-Series then filter descriptions should be stored with the data",
+                    "data_type": "text"
+                },
+                "<electrode_X>/": {
+                    "slice": {
+                        "description": "Information about slice used for recording",
+                        "data_type": "text"
+                    },
+                    "description": "One of possibly many folders describing electrode properties. Name should be informative.  This can optionally be a free-form text field that includes relevant description and metadata. (Using TAPI)",
+                    "seal": {
+                        "description": "Information about seal used for recording",
+                        "data_type": "text"
+                    },
+                    "device": {
+                        "description": "Name(s) of devices in general/devices",
+                        "data_type": "text"
+                    },
+                    "attributes": {
+                        "description": {
+                            "description": "Recording description, description of electrode (e.g.,  whole-cell, sharp, etc)",
+                            "data_type": "text"
+                        }
+                    },
+                    "resistance": {
+                        "unit": "Ohm",
+                        "data_type": "text",
+                        "description": "Electrode resistance in ohms"
+                    },
+                    "initial_access_resistance": {
+                        "description": "Initial access resistance",
+                        "data_type": "text"
+                    },
+                    "location": {
+                        "description": "Area, layer, comments on estimation, stereotaxis coordinates (if in vivo, etc)",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "identifier": {
+                "description": "A unique text identifier for the file",
+                "data_type": "text"
+            },
+            "Fluorescence/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "include": {
+                    "<ElectricalSeries>/*": {}
+                },
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+Fluorescence",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "ClusterWaveforms/": {
+                "merge": [
+                    "<interface>/"
+                ],
+                "waveform_sd": {
+                    "description": "Stdev of waveforms for each cluster",
+                    "data_type": "float",
+                    "dimensions": [
+                        "num_clusters",
+                        "num_samples"
+                    ]
+                },
+                "waveform_filtering": {
+                    "description": "Filtering applied to data before generating mean/sd",
+                    "data_type": "text"
+                },
+                "description": "The mean waveform shape, including standard deviation, of the different clusters.",
+                "clustering_interface/": {
+                    "description": "HDF5 link to Clustering interface that was the source of the clustered data"
+                },
+                "clustering_interface_path": {
+                    "description": "Path to linked clustering interface",
+                    "data_type": "text"
+                },
+                "waveform_mean": {
+                    "description": "The mean waveform for each cluster",
+                    "data_type": "float",
+                    "dimensions": [
+                        "num_clusters",
+                        "num_samples"
+                    ]
+                },
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+ClusterWaveforms",
+                        "data_type": "text"
+                    }
+                }
+            },
+            "Clustering/": {
+                "description": {
+                    "description": "Description of clusters or clustering, e.g. cluster 0 is noise, ...",
+                    "data_type": "text"
+                },
+                "times": {
+                    "unit": "second",
+                    "semantic_type": "timestamps",
+                    "description": "Time of clustered events",
+                    "data_type": "number",
+                    "dimensions": [
+                        "eventIndex"
+                    ]
+                },
+                "merge": [
+                    "<interface>/"
+                ],
+                "num": {
+                    "description": "Cluster number of each event",
+                    "data_type": "int",
+                    "dimensions": [
+                        "eventIndex"
+                    ]
+                },
+                "parent_attributes": {
+                    "interfaces": {
+                        "value": "+Clustering",
+                        "data_type": "text"
+                    }
+                },
+                "cluster_nums": {
+                    "description": "List of cluster number that are a part of this set.",
+                    "data_type": "int",
+                    "dimensions": [
+                        "num_clusters"
+                    ]
+                },
+                "peak_over_rms": {
+                    "description": "Maximum ration of waveform peak to RMS on any channel in the cluster",
+                    "data_type": "float",
+                    "dimensions": [
+                        "num_clusters"
+                    ]
+                }
+            }
+        },
+        "locations": {
+            "<module>/": [
+                "BehavioralEvents/",
+                "BehavioralEpochs/",
+                "BehavioralTimeSeries/",
+                "Clustering/",
+                "ClusterWaveforms/",
+                "CompassDirection/",
+                "DfOverF/",
+                "EventDetection/",
+                "EventWaveform/",
+                "EyeTracking/",
+                "FeatureExtraction/",
+                "FilteredEphys/",
+                "Fluorescence/",
+                "ImageSegmentation/",
+                "LFP/",
+                "MotionCorrection/",
+                "Position/",
+                "PupilTracking/",
+                "UnitTimes/"
+            ],
+            "/processing": [
+                "<module>/*"
+            ],
+            "/stimulus/presentation": [
+                "<TimeSeries>/*",
+                "<AbstractFeatureSeries>/*",
+                "<AnnotationSeries>/*",
+                "<IndexSeries>/*",
+                "<IntervalSeries>/*",
+                "<OptogeneticSeries>/*",
+                "<RoiResponseSeries>/*",
+                "<SpatialSeries>/*",
+                "<ElectricalSeries>/*",
+                "<SpikeEventSeries>/*",
+                "<PatchClampSeries>/*",
+                "<VoltageClampStimulusSeries>/",
+                "<CurrentClampStimulusSeries>/*",
+                "<VoltageClampSeries>/*",
+                "<CurrentClampSeries>/*",
+                "<ImageSeries>/*",
+                "<TwoPhotonSeries>/*",
+                "<OpticalSeries>/*"
+            ],
+            "/acquisition/images": [
+                "<image_X>*"
+            ],
+            "/acquisition/timeseries": [
+                "<TimeSeries>/*",
+                "<AbstractFeatureSeries>/*",
+                "<AnnotationSeries>/*",
+                "<IndexSeries>/*",
+                "<IntervalSeries>/*",
+                "<OptogeneticSeries>/*",
+                "<RoiResponseSeries>/*",
+                "<SpatialSeries>/*",
+                "<ElectricalSeries>/*",
+                "<SpikeEventSeries>/*",
+                "<PatchClampSeries>/*",
+                "<VoltageClampStimulusSeries>/",
+                "<CurrentClampStimulusSeries>/*",
+                "<VoltageClampSeries>/*",
+                "<CurrentClampSeries>/*",
+                "<ImageSeries>/*",
+                "<TwoPhotonSeries>/*",
+                "<OpticalSeries>/*"
+            ],
+            "/general": [
+                "session_id!",
+                "experimenter!",
+                "institution",
+                "lab",
+                "related_publications",
+                "notes",
+                "experiment_description",
+                "data_collection",
+                "stimulus",
+                "pharmacology",
+                "surgery",
+                "protocol",
+                "subject/",
+                "virus",
+                "slices",
+                "intracellular_ephys/",
+                "extracellular_ephys/",
+                "optogenetics/",
+                "devices/",
+                "__custom"
+            ],
+            "/stimulus/templates": [
+                "<TimeSeries>/*",
+                "<AbstractFeatureSeries>/*",
+                "<AnnotationSeries>/*",
+                "<IndexSeries>/*",
+                "<IntervalSeries>/*",
+                "<OptogeneticSeries>/*",
+                "<RoiResponseSeries>/*",
+                "<SpatialSeries>/*",
+                "<ElectricalSeries>/*",
+                "<SpikeEventSeries>/*",
+                "<PatchClampSeries>/*",
+                "<VoltageClampStimulusSeries>/",
+                "<CurrentClampStimulusSeries>/*",
+                "<VoltageClampSeries>/*",
+                "<CurrentClampSeries>/*",
+                "<ImageSeries>/*",
+                "<TwoPhotonSeries>/*",
+                "<OpticalSeries>/*"
+            ],
+            "/": [
+                "neurodata_version!",
+                "identifier!",
+                "file_create_date!",
+                "session_start_time",
+                "session_description",
+                "epochs/"
+            ]
+        }
+    }
+}
