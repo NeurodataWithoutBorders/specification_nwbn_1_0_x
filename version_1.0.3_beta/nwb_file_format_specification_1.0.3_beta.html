@@ -456,7 +456,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
 <tr><td>&lt;TimeSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;TimeSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
-<tr><td><i>.&nbsp;ancestry (attr)</i></td><td>text</td><td>The class-hierarchy of this TimeSeries, with one entry in the array for each ancestor. An alternative and equivalent description is that this TimeSeries object contains the datasets defined for all of the TimeSeries classes listed. The class hierarchy is described more fully below. </td><td> For example: [0]=TimeSeries, [1]=ElectricalSeries [1]=PatchClampSeries. The hierarchical order should be preserved in the array -- i.e., the parent object of subclassed element N in the array should be element N-1</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;ancestry (attr)</i></td><td>text</td><td>The class-hierarchy of this TimeSeries, with one entry in the array for each ancestor. An alternative and equivalent description is that this TimeSeries object contains the datasets defined for all of the TimeSeries classes listed. The class hierarchy is described more fully below. </td><td> For example: [0]=TimeSeries, [1]=ElectricalSeries [2]=PatchClampSeries. The hierarchical order should be preserved in the array -- i.e., the parent object of subclassed element N in the array should be element N-1</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;comments (attr)</i></td><td>text</td><td colspan="2">Human-readable comments about the TimeSeries. This second descriptive field can be used to store additional information, or descriptive information if the primary description field is populated with a computer-readable string.</td><td>recommended</td></tr>
 <tr><td><i>.&nbsp;data_link (attr)</i></td><td>text array; dims: ['num_dlinks']</td><td>A sorted list of the paths of all TimeSeries that share a link to the same data field. Example element of list: "/stimulus/presentation/Sweep_0"` </td><td> Attribute is only present if links are present. List should include the path to this TimeSeries also. <em>(Automatically created)</em></td><td>yes</td></tr>
 <tr><td><i>.&nbsp;description (attr)</i></td><td>text</td><td colspan="2">Description of TimeSeries</td><td>recommended</td></tr>
@@ -544,7 +544,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
 <tr><td>&lt;AbstractFeatureSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;AbstractFeatureSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'AbstractFeatureSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Features of an applied stimulus. This is useful when storing the raw stimulus is impractical". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Features of an applied stimulus. This is useful when storing the raw stimulus is impractical". (const)</td><td>no</td></tr>
 <tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>float32 array; dims: ['num_times', 'num_features']</td><td colspan="2">Values of each feature at each time.</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
@@ -560,7 +560,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>&lt;AnnotationSeries&gt;</td><td>group</td><td>Top level group for &lt;AnnotationSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td>Value is ['TimeSeries', 'AnnotationSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Time-stamped annotations about an experiment". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Time-stamped annotations about an experiment". (const)</td><td>no</td></tr>
 <tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>text array; dims: ['num_times']</td><td>Annotations made during an experiment.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;conversion (attr)</i></span></td><td>float32!</td><td>Value is float('NaN') (const) since this does not apply.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;resolution (attr)</i></span></td><td>float32!</td><td>Value is float('nan') (const) since this does not apply</td><td>yes</td></tr>
@@ -568,18 +568,18 @@ a:active {
 </table>
 <h3>&lt;ElectricalSeries&gt; extends <a href="#&lt;TimeSeries&gt;">&lt;TimeSeries&gt;</a><a name="&lt;ElectricalSeries&gt;">&nbsp;</a>
 </h3>
-<p>Stores acquired voltage data from extracellular recordings. The data field of an ElectricalSeries is an int or float array storing data in Volts. TimeSeries::data array structure: <span class="blue">[num events] [num channels] [num samples] (or [num events] [num samples] for single electrode).</span></p>
+<p>Stores acquired voltage data from extracellular recordings. The data field of an ElectricalSeries is an int or float array storing data in Volts. TimeSeries::data array structure: <span class="blue">[num times] [num channels] (or [num_times] for single electrode).</span></p>
 <p><i>&lt;ElectricalSeries&gt;</i> includes all elements of <i><a href="#&lt;TimeSeries&gt;">&lt;TimeSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
 <tr><td>&lt;ElectricalSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;ElectricalSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'ElectricalSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Stores acquired voltage data from extracellular recordings". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Stores acquired voltage data from extracellular recordings". (const)</td><td>no</td></tr>
 <tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>number array; dims: [['num_times'], ['num_times', 'num_channels']]</td><td colspan="2">Recorded voltage data.</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;unit (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "volt".</td><td>yes</td></tr>
-<tr><td>.&nbsp;electrode_idx</td><td>int32 array; dims: ['num_channels']</td><td colspan="2">Indicies to electrodes in general/extracellular_ephys/electrode_map.</td><td>yes</td></tr>
+<tr><td>.&nbsp;electrode_idx</td><td>int32 array; dims: ['num_channels']</td><td colspan="2">Indicies (zero-based) to electrodes in general/extracellular_ephys/electrode_map.</td><td>yes</td></tr>
 </table>
 <h3>&lt;SpikeEventSeries&gt; extends <a href="#&lt;ElectricalSeries&gt;">&lt;ElectricalSeries&gt;</a><a name="&lt;SpikeEventSeries&gt;">&nbsp;</a>
 </h3>
@@ -589,7 +589,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
 <tr><td>&lt;SpikeEventSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;SpikeEventSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td colspan="2">Value is ['TimeSeries', 'ElectricalSeries', 'SpikeEventSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Snapshots of spike events from data.". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Snapshots of spike events from data.". (const)</td><td>no</td></tr>
 <tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>float32 array; dims: [['num_events', 'num_samples'], ['num_events', 'num_channels', 'num_samples']]</td><td colspan="2">Spike waveforms.</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
@@ -603,7 +603,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
 <tr><td>&lt;ImageSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;ImageSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'ImageSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Storage object for time-series 2-D image data". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Storage object for time-series 2-D image data". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;bits_per_pixel</td><td>int32</td><td colspan="2">Number of bit per image pixel.</td><td>recommended</td></tr>
 <tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>number array; dims: [['x', 'y'], ['frame', 'y', 'x'], ['frame', 'z', 'y', 'x']]</td><td colspan="2">Either binary data containing image or empty. <b>Either 'external_file' or 'data' must be specified, but not both</b></td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
@@ -622,7 +622,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>&lt;ImageMaskSeries&gt;</td><td>group</td><td>Top level group for &lt;ImageMaskSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'ImageSeries', 'ImageMaskSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "An alpha mask that is applied to a presented visual stimulus". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "An alpha mask that is applied to a presented visual stimulus". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;masked_imageseries</td><td>link; target type=<a href="#&lt;ImageSeries&gt;">&lt;ImageSeries&gt;</a></td><td>Link to ImageSeries that mask is applied to.</td><td>yes</td></tr>
 <tr><td>.&nbsp;masked_imageseries_path</td><td>text</td><td>Path to linked ImageSeries <em>(Automatically created)</em></td><td>yes</td></tr>
 </table>
@@ -634,7 +634,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>&lt;OpticalSeries&gt;</td><td>group</td><td>Top level group for &lt;OpticalSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'ImageSeries', 'OpticalSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Time-series image stack for optical recording or stimulus". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Time-series image stack for optical recording or stimulus". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;distance</td><td>float32</td><td>Distance from camera/monitor to target/eye.</td><td>recommended</td></tr>
 <tr><td>.&nbsp;field_of_view</td><td>float32 array; dims: ['fov']</td><td>Width, height and depto of image, or imaged area (meters).</td><td>recommended</td></tr>
 <tr><td>.&nbsp;orientation</td><td>text</td><td>Description of image relative to some reference frame (e.g., which way is up). Must also specify frame of reference.</td><td>recommended</td></tr>
@@ -654,7 +654,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>&lt;TwoPhotonSeries&gt;</td><td>group</td><td>Top level group for &lt;TwoPhotonSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'ImageSeries', 'TwoPhotonSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Image stack recorded from 2-photon microscope". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Image stack recorded from 2-photon microscope". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;field_of_view</td><td>float32 array; dims: ['whd']</td><td>Width, height and depth of image, or imaged area (meters).</td><td>recommended</td></tr>
 <tr><td>.&nbsp;imaging_plane</td><td>text</td><td>Name of imaging plane description in /general/optophysiology.</td><td>yes</td></tr>
 <tr><td>.&nbsp;pmt_gain</td><td>float32</td><td>Photomultiplier gain</td><td>recommended</td></tr>
@@ -674,7 +674,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
 <tr><td>&lt;IndexSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;IndexSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'IndexSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "A sequence that is generated from an existing image stack. Frames can be presented in an arbitrary order. The data[] field stores frame number in reference stack". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "A sequence that is generated from an existing image stack. Frames can be presented in an arbitrary order. The data[] field stores frame number in reference stack". (const)</td><td>no</td></tr>
 <tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>int array; dims: ['num_times']</td><td colspan="2">Index of the frame in the referenced ImageSeries.</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
@@ -690,7 +690,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>&lt;IntervalSeries&gt;</td><td>group</td><td>Top level group for &lt;IntervalSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td>Value is ['TimeSeries', 'IntervalSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Stores the start and stop times for events". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Stores the start and stop times for events". (const)</td><td>no</td></tr>
 <tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>int8 array; dims: ['num_times']</td><td>>0 if interval started, <0 if interval ended.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;conversion (attr)</i></span></td><td>float32!</td><td>Value is the number "nan"</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;resolution (attr)</i></span></td><td>float32!</td><td>Value is the number "nan"</td><td>yes</td></tr>
@@ -704,7 +704,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
 <tr><td>&lt;OptogeneticSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;OptogeneticSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'OptogeneticSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Optogenetic stimulus". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Optogenetic stimulus". (const)</td><td>no</td></tr>
 <tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>float32 array; dims: ['num_times']</td><td colspan="2">Applied power for optogenetic stimulus.</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
@@ -719,7 +719,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
 <tr><td>&lt;PatchClampSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;PatchClampSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'PatchClampSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Superclass definition for patch-clamp data". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Superclass definition for patch-clamp data". (const)</td><td>no</td></tr>
 <tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>number array; dims: ['num_times']</td><td colspan="2">Recorded voltage or current.</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
@@ -735,7 +735,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>&lt;CurrentClampSeries&gt;</td><td>group</td><td>Top level group for &lt;CurrentClampSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'PatchClampSeries', 'CurrentClampSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Voltage recorded from cell during current-clamp recording". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Voltage recorded from cell during current-clamp recording". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;bias_current</td><td>float32</td><td>Unit: Amp</td><td>recommended</td></tr>
 <tr><td>.&nbsp;bridge_balance</td><td>float32</td><td>Unit: Ohm</td><td>recommended</td></tr>
 <tr><td>.&nbsp;capacitance_compensation</td><td>float32</td><td>Unit: Farad</td><td>recommended</td></tr>
@@ -748,7 +748,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>&lt;IZeroClampSeries&gt;</td><td>group</td><td>Top level group for &lt;IZeroClampSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['4']</td><td>Value is ['TimeSeries', 'PatchClampSeries', 'CurrentClampSeries', 'IZeroClampSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Voltage from intracellular recordings when all current and amplifier settings are off". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Voltage from intracellular recordings when all current and amplifier settings are off". (const)</td><td>no</td></tr>
 </table>
 <h3>&lt;CurrentClampStimulusSeries&gt; extends <a href="#&lt;PatchClampSeries&gt;">&lt;PatchClampSeries&gt;</a><a name="&lt;CurrentClampStimulusSeries&gt;">&nbsp;</a>
 </h3>
@@ -758,7 +758,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>&lt;CurrentClampStimulusSeries&gt;</td><td>group</td><td>Top level group for &lt;CurrentClampStimulusSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'PatchClampSeries', 'CurrentClampStimulusSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Stimulus current applied during current clamp recording". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Stimulus current applied during current clamp recording". (const)</td><td>no</td></tr>
 </table>
 <h3>&lt;VoltageClampSeries&gt; extends <a href="#&lt;PatchClampSeries&gt;">&lt;PatchClampSeries&gt;</a><a name="&lt;VoltageClampSeries&gt;">&nbsp;</a>
 </h3>
@@ -768,7 +768,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>&lt;VoltageClampSeries&gt;</td><td>group</td><td>Top level group for &lt;VoltageClampSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'PatchClampSeries', 'VoltageClampSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Current recorded from cell during voltage-clamp recording". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Current recorded from cell during voltage-clamp recording". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;capacitance_fast</td><td>float32</td><td>Unit: Farad</td><td>recommended</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Value is the string "Farad".</td><td>yes</td></tr>
 <tr><td>.&nbsp;capacitance_slow</td><td>float32</td><td>Unit: Farad</td><td>recommended</td></tr>
@@ -792,7 +792,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>&lt;VoltageClampStimulusSeries&gt;</td><td>group</td><td>Top level group for &lt;VoltageClampStimulusSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'PatchClampSeries', 'VoltageClampStimulusSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Stimulus voltage applied during voltage clamp recording". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Stimulus voltage applied during voltage clamp recording". (const)</td><td>no</td></tr>
 </table>
 <h3>&lt;RoiResponseSeries&gt; extends <a href="#&lt;TimeSeries&gt;">&lt;TimeSeries&gt;</a><a name="&lt;RoiResponseSeries&gt;">&nbsp;</a>
 </h3>
@@ -802,7 +802,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
 <tr><td>&lt;RoiResponseSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;RoiResponseSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'RoiResponseSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "ROI responses over an imaging plane. Each row in data[] should correspond to the signal from one ROI". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "ROI responses over an imaging plane. Each row in data[] should correspond to the signal from one ROI". (const)</td><td>no</td></tr>
 <tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>float32 array; dims: ['num_times', 'num_ROIs']</td><td colspan="2">Signals from ROIs</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
@@ -819,7 +819,7 @@ a:active {
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
 <tr><td>&lt;SpatialSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;SpatialSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
 <tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'SpatialSeries'] (const)</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Stores points in space over time. The data[] array structure is [num samples][num spatial dimensions]". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Stores points in space over time. The data[] array structure is [num samples][num spatial dimensions]". (const)</td><td>no</td></tr>
 <tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>number array; dims: ['num_times', 'num_features']</td><td colspan="2">2-D array storing position or direction relative to some reference frame.</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
@@ -867,7 +867,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>BehavioralEpochs</td><td>group</td><td>Top level group for BehavioralEpochs.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "General container for storing behavorial epochs". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "General container for storing behavorial epochs". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;<a href="#&lt;IntervalSeries&gt;">&lt;IntervalSeries&gt;</a></td><td>group</td><td>Stores intervals of data.</td><td>no</td></tr>
 </table>
 <h3>BehavioralEvents<a name="BehavioralEvents">&nbsp;</a>
@@ -877,7 +877,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>BehavioralEvents</td><td>group</td><td>Top level group for BehavioralEvents.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Position data, whether along the x, xy or xyz axis". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Position data, whether along the x, xy or xyz axis". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;<a href="#&lt;TimeSeries&gt;">&lt;TimeSeries&gt;</a></td><td>group</td><td>General purpose time series.</td><td>no</td></tr>
 </table>
 <h3>BehavioralTimeSeries<a name="BehavioralTimeSeries">&nbsp;</a>
@@ -896,7 +896,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>ClusterWaveforms</td><td>group</td><td>Top level group for ClusterWaveforms.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Mean waveform shape of clusters. Waveforms should be high-pass filtered (ie, not the same bandpass filter used waveform analysis and clustering)". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Mean waveform shape of clusters. Waveforms should be high-pass filtered (ie, not the same bandpass filter used waveform analysis and clustering)". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;clustering_interface</td><td>link; target type=<a href="#Clustering">Clustering</a></td><td>HDF5 link to Clustering interface that was the source of the clustered data</td><td>yes</td></tr>
 <tr><td>.&nbsp;clustering_interface_path</td><td>text</td><td>Path to linked clustering interface <em>(Automatically created)</em></td><td>yes</td></tr>
 <tr><td>.&nbsp;waveform_filtering</td><td>text</td><td>Filtering applied to data before generating mean/sd</td><td>yes</td></tr>
@@ -910,7 +910,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>Clustering</td><td>group</td><td>Top level group for Clustering.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Clustered spike data, whether from automatic clustering tools (eg, klustakwik) or as a result of manual sorting". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Clustered spike data, whether from automatic clustering tools (eg, klustakwik) or as a result of manual sorting". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;cluster_nums</td><td>int32 array; dims: ['num_clusters']</td><td>List of cluster number that are a part of this set (cluster numbers can be non- continuous) <em>(Automatically created)</em></td><td>yes</td></tr>
 <tr><td>.&nbsp;description</td><td>text</td><td>Description of clusters or clustering, (e.g. cluster 0 is noise, clusters curated using Klusters, etc)</td><td>yes</td></tr>
 <tr><td>.&nbsp;num</td><td>int32 array; dims: ['num_events']</td><td>Cluster number of each event</td><td>yes</td></tr>
@@ -924,7 +924,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>CompassDirection</td><td>group</td><td>Top level group for CompassDirection.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Direction as measured radially. Spatial series reference frame should indicate which direction corresponds to zero and what is the direction of positive rotation". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Direction as measured radially. Spatial series reference frame should indicate which direction corresponds to zero and what is the direction of positive rotation". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;<a href="#&lt;SpatialSeries&gt;">&lt;SpatialSeries&gt;</a></td><td>group</td><td>Direction, e.g., of gaze or travel, or position.</td><td>no</td></tr>
 </table>
 <h3>DfOverF<a name="DfOverF">&nbsp;</a>
@@ -934,7 +934,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>DfOverF</td><td>group</td><td>Top level group for DfOverF.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Df/f over time of one or more ROIs. TimeSeries names should correspond to imaging plane names". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Df/f over time of one or more ROIs. TimeSeries names should correspond to imaging plane names". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;<a href="#&lt;RoiResponseSeries&gt;">&lt;RoiResponseSeries&gt;</a></td><td>group</td><td>ROI responses over an imaging plane.</td><td>no</td></tr>
 </table>
 <h3>EventDetection<a name="EventDetection">&nbsp;</a>
@@ -947,7 +947,7 @@ a:active {
 <tr><td>.&nbsp;detection_method</td><td>text</td><td>Description of how events were detected, such as voltage threshold, or dV/dT threshold, as well as relevant values.</td><td>yes</td></tr>
 <tr><td>.&nbsp;source_electricalseries</td><td>link; target type=<a href="#&lt;ElectricalSeries&gt;">&lt;ElectricalSeries&gt;</a></td><td>HDF5 link to ElectricalSeries that this data was calculated from. Metadata about electrodes and their position can be read from that ElectricalSeries so it's not necessary to mandate that information be stored here</td><td>yes</td></tr>
 <tr><td>.&nbsp;source_electricalseries_path</td><td>text</td><td>Path to linked ElectricalSeries. <em>(Automatically created)</em></td><td>yes</td></tr>
-<tr><td>.&nbsp;source_idx</td><td>int32 array; dims: ['num_events']</td><td>Indices into source ElectricalSeries::data array corresponding to time of event. Module description should define what is meant by time of event (e.g., .25msec before action potential peak, zero-crossing time, etc). The index points to each event from the raw data</td><td>yes</td></tr>
+<tr><td>.&nbsp;source_idx</td><td>int32 array; dims: ['num_events']</td><td>Indices (zero-based) into source ElectricalSeries::data array corresponding to time of event. Module description should define what is meant by time of event (e.g., .25msec before action potential peak, zero-crossing time, etc). The index points to each event from the raw data</td><td>yes</td></tr>
 <tr><td>.&nbsp;times</td><td>float64! array; dims: ['num_events']</td><td>Timestamps of events, in Seconds</td><td>yes</td></tr>
 </table>
 <h3>EventWaveform<a name="EventWaveform">&nbsp;</a>
@@ -957,7 +957,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>EventWaveform</td><td>group</td><td>Top level group for EventWaveform.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Waveform of detected extracellularly recorded spike events". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Waveform of detected extracellularly recorded spike events". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;<a href="#&lt;SpikeEventSeries&gt;">&lt;SpikeEventSeries&gt;</a></td><td>group</td><td>Stores "snapshots" of spike events (i.e., threshold crossings) in data.</td><td>no</td></tr>
 </table>
 <h3>EyeTracking<a name="EyeTracking">&nbsp;</a>
@@ -967,7 +967,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>EyeTracking</td><td>group</td><td>Top level group for EyeTracking.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Eye-tracking data, representing direction of gaze". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Eye-tracking data, representing direction of gaze". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;<a href="#&lt;SpatialSeries&gt;">&lt;SpatialSeries&gt;</a></td><td>group</td><td>Direction, e.g., of gaze or travel, or position.</td><td>no</td></tr>
 </table>
 <h3>FeatureExtraction<a name="FeatureExtraction">&nbsp;</a>
@@ -977,9 +977,9 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>FeatureExtraction</td><td>group</td><td>Top level group for FeatureExtraction.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Container for salient features of detected events". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Container for salient features of detected events". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;description</td><td>text array; dims: ['num_features']</td><td>Description of features (eg, "PC1") for each of the extracted features.</td><td>yes</td></tr>
-<tr><td>.&nbsp;electrode_idx</td><td>int32 array; dims: ['num_channels']</td><td>Indices to electrodes described in the experiment's electrode map array (under /general/extracellular_ephys).</td><td>yes</td></tr>
+<tr><td>.&nbsp;electrode_idx</td><td>int32 array; dims: ['num_channels']</td><td>Indices (zero-based) to electrodes described in the experiment's electrode map array (under /general/extracellular_ephys).</td><td>yes</td></tr>
 <tr><td>.&nbsp;features</td><td>float32 array; dims: ['num_events', 'num_channels', 'num_features']</td><td>Multi-dimensional array of features extracted from each event.</td><td>yes</td></tr>
 <tr><td>.&nbsp;times</td><td>float64! array; dims: ['num_events']</td><td>Times of events that features correspond to (can be a link).</td><td>yes</td></tr>
 </table>
@@ -990,7 +990,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>FilteredEphys</td><td>group</td><td>Top level group for FilteredEphys.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Ephys data from one or more channels that is subjected to filtering, such as for gamma or theta oscillations (LFP has its own interface). Filter properties should be noted in the ElectricalSeries". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Ephys data from one or more channels that is subjected to filtering, such as for gamma or theta oscillations (LFP has its own interface). Filter properties should be noted in the ElectricalSeries". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;<a href="#&lt;ElectricalSeries&gt;">&lt;ElectricalSeries&gt;</a></td><td>group</td><td>Stores acquired voltage data from extracellular recordings.</td><td>yes</td></tr>
 </table>
 <h3>Fluorescence<a name="Fluorescence">&nbsp;</a>
@@ -1000,7 +1000,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>Fluorescence</td><td>group</td><td>Top level group for Fluorescence.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Fluorescence over time of one or more ROIs. TimeSeries names should correspond to imaging plane names". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Fluorescence over time of one or more ROIs. TimeSeries names should correspond to imaging plane names". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;<a href="#&lt;RoiResponseSeries&gt;">&lt;RoiResponseSeries&gt;</a></td><td>group</td><td>ROI responses over an imaging plane.</td><td>yes</td></tr>
 </table>
 <h3>ImageSegmentation<a name="ImageSegmentation">&nbsp;</a>
@@ -1010,7 +1010,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>ImageSegmentation</td><td>group</td><td>Top level group for ImageSegmentation.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is ('Stores groups of pixels that define regions of interest from one or more imaging planes',) (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is ('Stores groups of pixels that define regions of interest from one or more imaging planes',) (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;&lt;image_plane&gt;</td><td>group</td><td>Group name is human-readable description of imaging plane</td><td>no</td></tr>
 <tr><td>.&nbsp;.&nbsp;&lt;roi_name&gt;</td><td>group</td><td>Name of ROI</td><td>no</td></tr>
 <tr><td>.&nbsp;.&nbsp;.&nbsp;img_mask</td><td>float32 array; dims: ['num_x', 'num_y']</td><td>ROI mask, represented in 2D ([y][x]) intensity image</td><td>yes</td></tr>
@@ -1030,7 +1030,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>ImagingRetinotopy</td><td>group</td><td>Top level group for ImagingRetinotopy.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Intrinsic signal optical imaging or Widefield imaging for measuring retinotopy". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Intrinsic signal optical imaging or Widefield imaging for measuring retinotopy". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;axis_1_phase_map</td><td>float32 array; dims: ['num_rows', 'num_cols']</td><td>Phase response to stimulus on the first measured axis</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;dimension (attr)</i></td><td>int32 array; dims: ['row_col']</td><td>Number of rows and columns in the image. NOTE: row, column representation is equivalent to height,width.</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;field_of_view (attr)</i></td><td>float array; dims: ['row_col']</td><td>Size of viewing area, in meters</td><td>yes</td></tr>
@@ -1076,7 +1076,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>LFP</td><td>group</td><td>Top level group for LFP.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "LFP data from one or more channels. Filter properties should be noted in the ElectricalSeries". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "LFP data from one or more channels. Filter properties should be noted in the ElectricalSeries". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;<a href="#&lt;ElectricalSeries&gt;">&lt;ElectricalSeries&gt;</a></td><td>group</td><td>Stores acquired voltage data from extracellular recordings.</td><td>yes</td></tr>
 </table>
 <h3>MotionCorrection<a name="MotionCorrection">&nbsp;</a>
@@ -1086,7 +1086,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
 <tr><td>MotionCorrection</td><td>group</td><td colspan="2">Top level group for MotionCorrection.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Image stacks whose frames have been shifted (registered) to account for motion". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Image stacks whose frames have been shifted (registered) to account for motion". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;&lt;image stack name&gt;</td><td>group</td><td colspan="2">One of possibly many.  Name should be informative.</td><td>yes</td></tr>
 <tr><td>.&nbsp;.&nbsp;corrected</td><td><a href="#&lt;ImageSeries&gt;">&lt;ImageSeries&gt;</a> (group)</td><td colspan="2">Image stack with frames shifted to the common coordinates.</td><td>yes</td></tr>
 <tr><td>.&nbsp;.&nbsp;original</td><td>link; target type=<a href="#&lt;ImageSeries&gt;">&lt;ImageSeries&gt;</a> (or subclass)</td><td colspan="2">HDF5 Link to image series that is being registered.</td><td>yes</td></tr>
@@ -1110,7 +1110,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>Position</td><td>group</td><td>Top level group for Position.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Position data, whether along the x, xy or xyz axis". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Position data, whether along the x, xy or xyz axis". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;<a href="#&lt;SpatialSeries&gt;">&lt;SpatialSeries&gt;</a></td><td>group</td><td>Direction, e.g., of gaze or travel, or position.</td><td>yes</td></tr>
 </table>
 <h3>PupilTracking<a name="PupilTracking">&nbsp;</a>
@@ -1120,7 +1120,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>PupilTracking</td><td>group</td><td>Top level group for PupilTracking.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Eye-tracking data, representing pupil size". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Eye-tracking data, representing pupil size". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;<a href="#&lt;TimeSeries&gt;">&lt;TimeSeries&gt;</a></td><td>group</td><td>General purpose time series.</td><td>yes</td></tr>
 </table>
 <h3>UnitTimes<a name="UnitTimes">&nbsp;</a>
@@ -1130,7 +1130,7 @@ a:active {
 <table class="print-friendly">
 <tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
 <tr><td>UnitTimes</td><td>group</td><td>Top level group for UnitTimes.</td><td>yes</td></tr>
-<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Estimated spike times from a single unit". (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Estimated spike times from a single unit". (const)</td><td>no</td></tr>
 <tr><td>.&nbsp;&lt;unit_N&gt;</td><td>group</td><td>Group storing times for &lt;unit_N&gt;.</td><td>yes</td></tr>
 <tr><td>.&nbsp;.&nbsp;source</td><td>text</td><td>Name, path or description of where unit times originated. This is necessary only if the info here differs from or is more fine-grained than the interface's source field</td><td>recommended</td></tr>
 <tr><td>.&nbsp;.&nbsp;times</td><td>float64! array; dims: ['num_events']</td><td>Spike time for the units (exact or estimated)</td><td>yes</td></tr>
@@ -1177,7 +1177,7 @@ a:active {
 <tr><td><i>.&nbsp;.&nbsp;links (attr)</i></td><td>text array; dims: num_links</td><td colspan="2">A sorted list mapping TimeSeries entries in the epoch to the path of the TimeSeries within the file. Each entry in the list has the following format: "'<i>&lt;TimeSeries_X&gt;</i>' <b>is</b> '<i>path_to_TimeSeries</i>'", where <i>&lt;TimeSeries_X&gt;</i> is the name assigned to group  &lt;TimeSeries_X&gt; (below). Note that the name and path are both enclosed in single quotes and the word "is" (with a single space before and after) separate them. <b>Example list element:</b> "'auditory_cue' is '/stimulus/presentation/auditory_cue'". <em>(Automatically created)</em></td><td>yes</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;neurodata_type (attr)</i></td><td>text</td><td colspan="2">The string "Epoch"</td><td>yes</td></tr>
 <tr><td>.&nbsp;.&nbsp;&lt;timeseries_X&gt;</td><td>group</td><td>One of possibly many input or output streams recorded during epoch. </td><td> Name is arbitrary and does not have to match the TimeSeries that it refers to.</td><td>no</td></tr>
-<tr><td>.&nbsp;.&nbsp;.&nbsp;count</td><td>int32</td><td>Number of data samples available in this time series, during this epoch. </td><td> Changed from stop_idx to lessen ambiguity</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;.&nbsp;count</td><td>int32</td><td colspan="2">Number of data samples available in this time series, during this epoch.</td><td>yes</td></tr>
 <tr><td>.&nbsp;.&nbsp;.&nbsp;idx_start</td><td>int32</td><td>Epoch's start index in TimeSeries data[] field. </td><td> This can be used to calculate location in TimeSeries timestamp[] field</td><td>yes</td></tr>
 <tr><td>.&nbsp;.&nbsp;.&nbsp;timeseries</td><td>link; target type=<a href="#&lt;TimeSeries&gt;">&lt;TimeSeries&gt;</a> (or subclass)</td><td colspan="2">Link to TimeSeries.  An HDF5 soft-link should be used.</td><td>yes</td></tr>
 <tr><td>.&nbsp;.&nbsp;description</td><td>text</td><td colspan="2">Description of this epoch (&lt;epoch_X&gt;).</td><td>no</td></tr>
@@ -1213,7 +1213,7 @@ a:active {
 <tr><td><i>.&nbsp;.&nbsp;file_name (attr)</i></td><td>text</td><td colspan="2">Name of script file</td><td>no</td></tr>
 <tr><td>.&nbsp;specifications</td><td>group</td><td colspan="2">Group for storing format specification files.</td><td>no</td></tr>
 <tr><td>.&nbsp;.&nbsp;&lt;specification_file&gt;</td><td>text</td><td colspan="2">Dataset for storing contents of a specification file for either the core format or an extension.  Name should match name of file.`</td><td>no</td></tr>
-<tr><td><i>.&nbsp;.&nbsp;.&nbsp;help (attr)</i></td><td>text</td><td colspan="2">Value is the string "Contents of format specification file.".</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;.&nbsp;help (attr)</i></td><td>text</td><td colspan="2">Value is the string "Contents of format specification file.".</td><td>no</td></tr>
 <tr><td><i>.&nbsp;.&nbsp;.&nbsp;namespaces (attr)</i></td><td>text array; dims: ['num_namespaces']</td><td colspan="2">Namespaces defined in the file</td><td>yes</td></tr>
 <tr><td>.&nbsp;stimulus</td><td>text</td><td>Notes about stimuli, such as how and where presented.</td><td> Can be from Methods</td><td>no</td></tr>
 <tr><td>.&nbsp;subject</td><td>group</td><td colspan="2">Information about the animal or person from which the data was measured.</td><td>no</td></tr>
