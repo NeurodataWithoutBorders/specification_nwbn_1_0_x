@@ -125,7 +125,7 @@ a:active {
 <br /><br />
 
 <font style="font-size: 22pt">NWB file format specification</font><br />
-<font style="font-size: 12pt">Version 1.0.3-beta, May 23, 2016</font><br />
+<font style="font-size: 12pt">Version 1.0.4_beta, June 8, 2016</font><br />
 <font style="font-size: 10pt">(File 'nwb_core.py', namespace 'core')</font>
 
 </center>
@@ -465,7 +465,7 @@ a:active {
 <tr><td><i>.&nbsp;missing_fields (attr)</i></td><td>text array; dims: ['num_missing_fields']</td><td>List of fields that are not optional (i.e. either required or recommended parts of the TimeSeries) that are missing. </td><td> Only present if one or more required or recommended fields are missing. Note that a missing required field (such as data or timestamps) should generate an error by the API <em>(Automatically created)</em></td><td>recommended</td></tr>
 <tr><td><i>.&nbsp;neurodata_type (attr)</i></td><td>text</td><td colspan="2">Value is the string "TimeSeries". (const)</td><td>yes</td></tr>
 <tr><td><i>.&nbsp;source (attr)</i></td><td>text</td><td colspan="2">Name of TimeSeries or Modules that serve as the source for the data contained here. It can also be the name of a device, for stimulus or acquisition data</td><td>yes</td></tr>
-<tr><td><i>.&nbsp;timestamp_link (attr)</i></td><td>text</td><td>A sorted list of the paths of all TimeSeries that share a link to the same timestamps field.  Example element of list: "/acquisition/timeseries/lick_trace" </td><td> Attribute is only present if links are present. List should include the path to this TimeSeries also. <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td><i>.&nbsp;timestamp_link (attr)</i></td><td>text array; dims: ['num_tslinks']</td><td>A sorted list of the paths of all TimeSeries that share a link to the same timestamps field.  Example element of list: "/acquisition/timeseries/lick_trace" </td><td> Attribute is only present if links are present. List should include the path to this TimeSeries also. <em>(Automatically created)</em></td><td>yes</td></tr>
 <tr><td>.&nbsp;control</td><td>uint8 array; dims: ['num_times']</td><td>Numerical labels that apply to each element in data[]. </td><td> Optional field. If present, the control array should have the same number of elements as data[]. <b>If either control or control_description are present, then both must be present.</b></td><td>no</td></tr>
 <tr><td>.&nbsp;control_description</td><td>text array; dims: ['num_control_values']</td><td>Description of each control value. </td><td> Array length should be as long as the highest number in control minus one, generating an zero-based indexed array for control values. <b>If either control or control_description are present, then both must be present.</b></td><td>no</td></tr>
 <tr><td>.&nbsp;data</td><td>any array; dims: ['num_times']</td><td>Data values. Can also store binary data (eg, image frames) </td><td> This field may be a link to data stored in an external file, especially in the case of raw data.</td><td>yes</td></tr>
