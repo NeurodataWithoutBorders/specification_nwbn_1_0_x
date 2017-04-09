@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>nwb_core.py documentation</title>
+    <style type="text/css">
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 9pt;
+}
+table, td, th {
+    border: 1px solid black;
+}
+h2, h3 {
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+
+table.print-friendly tr td, table.print-friendly tr th {
+        page-break-inside: avoid; !important;
+        page-break-after: avoid
+}
+/*
+table, tr, td, th, tbody, thead, tfoot {
+    page-break-inside: avoid !important;
+}
+@media print
+{
+  table { page-break-after:auto }
+  tr    { page-break-inside:avoid; page-break-after:auto }
+  td    { page-break-inside:avoid; page-break-after:auto }
+  thead { display:table-header-group }
+  tfoot { display:table-footer-group }
+}
+*/
+/*
+@page {
+   size: 6in 9.25in;
+   margin: 27mm 16mm 27mm 16mm;
+}
+*/
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+p {
+    font-size: 12pt;
+    text-align: justify;
+}
+
+p, ul{
+     padding-bottom:0px; 
+     margin-bottom:0px;
+     padding-top:0px; 
+     margin-top:0px;
+}
+table tr th {
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    border-left: 1px solid #000000;
+    border-right: none;
+    padding-top: 0.04in;
+    padding-bottom: 0.04in;
+    padding-left: 0.04in;
+    padding-right: 0in;
+    background-color: #c0c0c0;
+    font-size: 10pt;
+   -webkit-print-color-adjust:exact;
+}
+table.dimensions {
+    width: 50%;
+}
+
+span.hy {
+    background-color: yellow;
+    -webkit-print-color-adjust:exact;
+}
+span.red {
+    color: red;
+    -webkit-print-color-adjust:exact;
+}
+span.blue {
+    color: blue;
+    -webkit-print-color-adjust:exact;
+}
+span.del {
+    text-decoration:line-through;
+    text-decoration-color: red;
+}
+span.notbold{
+    font-weight:normal
+}
+
+span.comment {
+    font-style: italic;
+    background-color: LightBlue;  /* Aqua;*/
+    -webkit-print-color-adjust:exact;
+}
+
+/* Remove underline from links */
+
+a:link {
+    text-decoration: none;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:active {
+    text-decoration: underline;
+}
+    </style>
+  </head>
+  <body>
+
+<div style="text-align: center">
+<span style="font-size: 12pt">Documentation for: nwb_core.py</span>
+<br /><br />
+
+<span style="font-size: 22pt">NWB file format specification</span><br />
+<span style="font-size: 12pt">Version 1.0.6, April 8, 2017</span><br />
+<span style="font-size: 10pt">(File 'nwb_core.py', namespace 'core')</span>
+
+</div>
+<h2>Table of contents</h2>
+<a href="#Introduction"><b>Introduction</b></a><br />
+ &nbsp; &nbsp; <a href="#Naming_conventions">Naming conventions</a><br />
+ &nbsp; &nbsp; <a href="#Link_types">Link types</a><br />
+ &nbsp; &nbsp; <a href="#Automatically_created_components">Automatically created components</a><br />
+ &nbsp; &nbsp; <a href="#Top_level_groups">Top level groups</a><br />
+ &nbsp; &nbsp; <a href="#Top_level_datasets">Top level datasets</a><br />
+<a href="#TimeSeries"><b>TimeSeries</b></a><br />
+ &nbsp; &nbsp; <a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a><br />
+<a href="#TimeSeries_Class_Hierarchy"><b>TimeSeries Class Hierarchy</b></a><br />
+<ul>
+<li><a href="#%3CAbstractFeatureSeries%3E">&lt;AbstractFeatureSeries&gt;</a></li>
+<li><a href="#%3CAnnotationSeries%3E">&lt;AnnotationSeries&gt;</a></li>
+<li><a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a>
+<ul>
+<li><a href="#%3CSpikeEventSeries%3E">&lt;SpikeEventSeries&gt;</a></li>
+</ul>
+<li><a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a>
+<ul>
+<li><a href="#%3CImageMaskSeries%3E">&lt;ImageMaskSeries&gt;</a></li>
+<li><a href="#%3COpticalSeries%3E">&lt;OpticalSeries&gt;</a></li>
+<li><a href="#%3CTwoPhotonSeries%3E">&lt;TwoPhotonSeries&gt;</a></li>
+</ul>
+<li><a href="#%3CIndexSeries%3E">&lt;IndexSeries&gt;</a></li>
+<li><a href="#%3CIntervalSeries%3E">&lt;IntervalSeries&gt;</a></li>
+<li><a href="#%3COptogeneticSeries%3E">&lt;OptogeneticSeries&gt;</a></li>
+<li><a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a>
+<ul>
+<li><a href="#%3CCurrentClampSeries%3E">&lt;CurrentClampSeries&gt;</a>
+<ul>
+<li><a href="#%3CIZeroClampSeries%3E">&lt;IZeroClampSeries&gt;</a></li>
+</ul>
+<li><a href="#%3CCurrentClampStimulusSeries%3E">&lt;CurrentClampStimulusSeries&gt;</a></li>
+<li><a href="#%3CVoltageClampSeries%3E">&lt;VoltageClampSeries&gt;</a></li>
+<li><a href="#%3CVoltageClampStimulusSeries%3E">&lt;VoltageClampStimulusSeries&gt;</a></li>
+</ul>
+<li><a href="#%3CRoiResponseSeries%3E">&lt;RoiResponseSeries&gt;</a></li>
+<li><a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a></li>
+</ul>
+<a href="#Modules"><b>Modules</b></a><br />
+ &nbsp; &nbsp; <a href="#%3CModule%3E">&lt;Module&gt;</a><br />
+ &nbsp; &nbsp; <a href="#%3CInterface%3E">&lt;Interface&gt;</a><br />
+<ul>
+<li><a href="#BehavioralEpochs">BehavioralEpochs</a></li>
+<li><a href="#BehavioralEvents">BehavioralEvents</a></li>
+<li><a href="#BehavioralTimeSeries">BehavioralTimeSeries</a></li>
+<li><a href="#ClusterWaveforms">ClusterWaveforms</a></li>
+<li><a href="#Clustering">Clustering</a></li>
+<li><a href="#CompassDirection">CompassDirection</a></li>
+<li><a href="#DfOverF">DfOverF</a></li>
+<li><a href="#EventDetection">EventDetection</a></li>
+<li><a href="#EventWaveform">EventWaveform</a></li>
+<li><a href="#EyeTracking">EyeTracking</a></li>
+<li><a href="#FeatureExtraction">FeatureExtraction</a></li>
+<li><a href="#FilteredEphys">FilteredEphys</a></li>
+<li><a href="#Fluorescence">Fluorescence</a></li>
+<li><a href="#ImageSegmentation">ImageSegmentation</a></li>
+<li><a href="#ImagingRetinotopy">ImagingRetinotopy</a></li>
+<li><a href="#LFP">LFP</a></li>
+<li><a href="#MotionCorrection">MotionCorrection</a></li>
+<li><a href="#Position">Position</a></li>
+<li><a href="#PupilTracking">PupilTracking</a></li>
+<li><a href="#UnitTimes">UnitTimes</a></li>
+</ul>
+<a href="#File_organization"><b>File organization</b></a><br />
+ &nbsp; &nbsp; <a href="#/acquisition">/acquisition</a><br />
+ &nbsp; &nbsp; <a href="#/analysis">/analysis</a><br />
+ &nbsp; &nbsp; <a href="#/epochs">/epochs</a><br />
+ &nbsp; &nbsp; <a href="#/general">/general</a><br />
+ &nbsp; &nbsp; <a href="#/general/extracellular_ephys">/general/extracellular_ephys</a><br />
+ &nbsp; &nbsp; <a href="#/general/intracellular_ephys">/general/intracellular_ephys</a><br />
+ &nbsp; &nbsp; <a href="#/general/optogenetics">/general/optogenetics</a><br />
+ &nbsp; &nbsp; <a href="#/general/optophysiology">/general/optophysiology</a><br />
+ &nbsp; &nbsp; <a href="#/processing">/processing</a><br />
+ &nbsp; &nbsp; <a href="#/stimulus">/stimulus</a><br />
+<a href="#Extending_the_format"><b>Extending the format</b></a><br />
+<a href="#Acknowledgements"><b>Acknowledgements</b></a><br />
+<a href="#Change_history"><b>Change history</b></a><br />
+<a href="#Design_notes"><b>Design notes</b></a><br />
+<h2 id="Introduction">Introduction</h2>
+
+    <p style="margin-bottom: 0in">Neurodata Without Borders:
+      Neurophysiology is a project to develop a unified data format for
+      cellular-based neurophysiology data, focused on the dynamics of
+      groups of neurons measured under a large range of experimental
+      conditions. Participating labs provided use cases and critical
+      feedback to the effort. The design goals for the NWB format included:</p>
+    <p style="margin-bottom: 0in"><br>
+    </p>
+    <p style="margin-bottom: 0in"><b>Compatibility</b></p>
+    <ul>
+      <li>
+        <p style="margin-bottom: 0in">Cross-platform</p>
+      </li>
+      <li>
+        <p style="margin-bottom: 0in">Support for tool makers</p>
+      </li>
+    </ul>
+    <p style="margin-bottom: 0in"><b>Usability</b></p>
+    <ul>
+      <li>
+        <p style="margin-bottom: 0in">Quickly develop a basic understanding of
+          an experiment and its data</p>
+      </li>
+      <li>
+        <p style="margin-bottom: 0in">Review an experiment's details without
+          programming knowledge</p>
+      </li>
+    </ul>
+    <p style="margin-bottom: 0in"><b>Flexibility</b></p>
+    <ul>
+      <li>
+        <p style="margin-bottom: 0in">Accommodate an experiment's raw and
+          processed data</p>
+      </li>
+      <li>
+        <p style="margin-bottom: 0in">Encapsulate all of an experiment's data,
+          or link to external data source when necessary</p>
+      </li>
+    </ul>
+    <p style="margin-bottom: 0in"><b>Extensibility</b></p>
+    <ul>
+      <li>
+        <p style="margin-bottom: 0in">Accommodate future experimental paradigms
+          without sacrificing backwards compatibility.</p>
+      </li>
+      <li>
+        <p style="margin-bottom: 0in">Support custom extensions when the
+          standard is lacking</p>
+      </li>
+    </ul>
+    <p style="margin-bottom: 0in"><b>Longevity</b></p>
+    <ul>
+      <li>
+        <p style="margin-bottom: 0in">Data published in the format should be
+          accessible for decades</p>
+      </li>
+    </ul>
+    <p style="margin-bottom: 0in"><br>
+    </p>
+    <p style="margin-bottom: 0in">
+    <a href="https://www.hdfgroup.org/HDF5/">Hierarchical Data Format (HDF)</a>
+      was selected for the NWB format
+      because it met several of the project's requirements. First, it is
+      a mature data format standard with libraries available in multiple
+      programming languages. Second, the format's hierarchical structure
+      allows data to be grouped into logical self-documenting sections. Its
+      structure is analogous to a file system in which its "groups" and
+      "datasets" correspond to directories and files. Groups and
+      datasets can have attributes that provide additional details, such as
+      authorities' identifiers. Third, its linking feature enables data
+      stored in one location to be transparently accessed from multiple
+      locations in the hierarchy. The linked data can be external to the
+      file. Fourth,
+      <a href="https://www.hdfgroup.org/products/java/hdfview/">HDFView</a>,
+      a free, cross-platform application, can be used to open a file and
+      browse data. Finally, ensuring the ongoing accessibility of
+      HDF-stored data is the mission of The HDF Group, the nonprofit that
+      is the steward of the technology.</p>
+    <p style="margin-bottom: 0in"><br>
+    </p>
+    <p style="margin-bottom: 0in">The NWB format standard is codified in
+      a schema file written in a specification language created for this
+      project. The specification language describes the schema, including
+      data types and associations. A new schema file will be published for
+      each revision of the NWB format standard. Data publishers can use the
+      specification language to extend the format in order to store types
+      of data not managed by the base format.
+      </p>
+    
+<h3 id="Naming_conventions">Naming conventions</h3>
+
+        <p>
+        In this document (and in the specification language used to define
+        the format) an identifier enclosed in angle brackets (e.g.
+        "<i>&lt;ElectricalSeries&gt;</i>")
+        denotes a group or dataset with a "variable" name. That is, the name
+        within the HDF5 file is set by the application
+        creating the file and multiple instances may be created within the same
+        group (each having a unique name).
+        Identifiers that are not enclosed in angle brackets
+        (e.g. "<i>CompassDirection</i>") are
+        the actual name of the group or dataset within the HDF5 file.
+        There can only be one instance within a given group since the name is fixed.
+        </p>
+        
+<h3 id="Link_types">Link types</h3>
+
+        <p>
+        In some instances, the specification refers to HDF5 links.  When links are
+        made within the file, HDF5 soft-links (and not hard-links) should be used.  This
+        is because soft-links distinguish between the link and the target of the link,
+        whereas hard-links cause multiple names (paths) to be created for the
+        target, and there is no way to determine which of these names are preferable
+        in a given situation.  If the target of a soft link
+        is removed (or moved to another location in the HDF5 file)&mdash;both of
+        which can be done using the HDF5 API&mdash;then the soft link will "dangle," that
+        is point to a target that no longer exists.  For this reason, moving or removing
+        targets of soft links should be avoided unless the links are updated to point
+        to the new location.
+        
+<h3 id="Automatically_created_components">Automatically created components</h3>
+
+        <p>
+        In the format, the value of some datasets and attributes can usually be determined
+        automatically from other parts of the HDF5 file.  For example, a dataset that
+        has as value the target of a link can be determined automatically from a list
+        of links in the HDF5 file.  When possible, the NWB API will automatically create
+        such components and required groups.  The components (datasets, attributes and
+        required groups) that are automatically created by the API are
+        indicated by the phrase <em>(Automatically
+        created)</em> in the description or comment.  The creation of these components is
+        specified by the "autogen" option in the format specification language.  This is
+        not a part of the format (different API's may create the data files in
+        different ways).  The information is included for the convenience of those using
+        the NWB API and also for developers of other APIs who may wish to also auto-generate
+        these components.</p>
+        
+<h3 id="Top_level_groups">Top level groups</h3>
+<table class="print-friendly">
+<tr><th>Id</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td><a href="#/acquisition">acquisition</a></td><td>Data streams recorded from the system, including ephys, ophys, tracking, etc. </td><td> This group is read-only after the experiment is completed and timestamps are corrected to a common timebase. The data stored here may be links to raw data stored in external HDF5 files. This will allow keeping bulky raw data out of the file while preserving the option of keeping some/all in the file.  <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td><a href="#/analysis">analysis</a></td><td>Lab-specific and custom scientific analysis of data. There is no defined format for the content of this group - the format is up to the individual user/lab. </td><td> To facilitate sharing analysis data between labs, the contents here should be stored in standard types (eg, INCF types) and appropriately documented.  <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td><a href="#/epochs">epochs</a></td><td>Experimental intervals, whether that be logically distinct sub-experiments having a particular scientific goal, trials during an experiment, or epochs deriving from analysis of data.  </td><td> Epochs provide pointers to time series that are relevant to the epoch, and windows into the data in those time series (i.e., the start and end indices of TimeSeries::data[] that overlap with the epoch). This allows easy access to a range of data in specific experimental intervals.  <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td><a href="#/general">general</a></td><td>Experimental metadata, including protocol, notes and description of hardware device(s).  </td><td> The metadata stored in this section should be used to describe the experiment. Metadata necessary for interpreting the data is stored with the data.  <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td><a href="#/processing">processing</a></td><td>The home for processing Modules. These modules perform intermediate analysis of data that is necessary to perform before scientific analysis. Examples include spike clustering, extracting position from tracking data, stitching together image slices. </td><td> Modules are defined below. They can be large and express many data sets from relatively complex analysis (e.g., spike detection and clustering) or small, representing extraction of position information from tracking video, or even binary lick/no-lick decisions. Common software tools (e.g., klustakwik, MClust) are expected to read/write data here.  <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td><a href="#/stimulus">stimulus</a></td><td>Data pushed into the system (eg, video stimulus, sound, voltage, etc) and secondary representations of that data (eg, measurements of something used as a stimulus) </td><td> This group is read-only after experiment complete and timestamps are corrected to common timebase. Stores both presented stimuli and stimulus templates, the latter in case the same stimulus is presented multiple times, or is pulled from an external stimulus library. <em>(Automatically created)</em></td><td>yes</td></tr>
+</table>
+
+      <br />
+      <p style="margin-bottom: 0in">The content of these organizational
+      groups is more fully described in the section titled,
+      <a href="#File_organization">File organization</a>.
+      The NWB format is
+      based on <i><a href="#TimeSeries">TimeSeries</a></i>
+      and <i><a href="#Modules">Modules</a></i> and these are defined first. </p>
+    <p style="margin-bottom: 0in"><br>
+    </p>
+    <p style="margin-bottom: 0in">NWB stores general optical and
+      electrical physiology data in a way that should be understandable to
+      a naive user after a few minutes using looking at the file in an HDF5
+      browser, such as HDFView. The format is designed to be friendly to
+      and usable by software tools and analysis scripts, and to impose few
+      a priori assumptions about data representation and analysis. Metadata
+      required to understand the data itself (core metadata) is generally
+      stored with the data. Information required to interpret the
+      experiment (general metadata) is stored in the group 'general'. Most
+      general metadata is stored in free-form text fields. Machine-readable
+      metadata is stored as attributes on these free-form text fields.</p>
+    <p style="margin-bottom: 0in"><br>
+    </p>
+    <p style="margin-bottom: 0in">The only API assumed necessary to read
+      a NWB file is an HDF5 library (e.g., h5py in python, libhdf5 in C,
+      JHI5 in Java).</p>
+    
+<h3 id="Top_level_datasets">Top level datasets</h3>
+
+    <p style="margin-bottom: 0in; page-break-after: avoid">Top-level
+      datasets are for file identification and version information.</p>
+        
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>file_create_date</td><td>text array; dims: ['*unlimited*']</td><td>Time file was created, UTC, and subsequent modifications to file. </td><td> Date + time, Use ISO format (eg, ISO 8601) or a format that is easy to read and unambiguous. File can be created after the experiment was run, so this may differ from experiment start time. Each modifictation to file adds new entry to array. </td><td>yes</td></tr>
+<tr><td>identifier</td><td>text</td><td>A unique text identifier for the file. </td><td> Eg, concatenated lab name, file creation date/time and experimentalist, or a hash of these and/or other values. The goal is that the string should be unique to all other files.</td><td>yes</td></tr>
+<tr><td>nwb_version</td><td>text</td><td>File version string. </td><td> Eg, NWB-1.0.0. This will be the name of the format with trailing major, minor and patch numbers.</td><td>yes</td></tr>
+<tr><td>session_description</td><td>text</td><td colspan="2">One or two sentences describing the experiment and data in the file.</td><td>yes</td></tr>
+<tr><td>session_start_time</td><td>text</td><td>Time of experiment/session start, UTC.  </td><td> Date + time, Use ISO format (eg, ISO 8601) or an easy-to-read and unambiguous format. All times stored in the file use this time as reference (ie, time zero)</td><td>yes</td></tr>
+</table>
+
+    <p style="margin-bottom: 0in"><br>
+    </p><p>
+    All times are stored in seconds using double precision (64 bit) floating
+    point values.  A smaller floating point value, e.g. 32 bit, is <b>not</b> permitted
+    for storing times.
+    This is because significant errors for time can result from using smaller data sizes.
+    Throughout this document, sizes (number of bits) are provided
+    for many datatypes (e.g. float32).
+    If the size is followed by "!" then the size is the
+    minimum size, otherwise it is the recommended size.  For fields with a
+    recommended size, larger or smaller sizes can be used (and for integer types both signed and
+    unsigned), so long as the selected size encompasses the full range of
+    data, and for floats, without loss of significant precision.  Fields that have
+    a minimum size can use larger, but not smaller sizes.
+    </p>
+        
+<h2 id="TimeSeries">TimeSeries</h2>
+
+   <p style="margin-bottom: 0in; page-break-after: avoid">The file
+      format is designed around a data structure called a <i>TimeSeries</i>
+      which stores time-varying data. A <i>TimeSeries</i> is a superset of
+      several INCF types, including signal events, image stacks and
+      experimental events. To account for different storage requirements
+      and different modalities, a <i>TimeSeries</i> is defined in a minimal
+      form and it can be extended, or subclassed, to account for different
+      modalities and data storage requirements. When a <i>TimeSeries</i> is
+      extended, it means that the 'subclassed' instance maintains
+      or changes each of
+      the components (eg, groups and datasets) of its parent and may have
+      new groups and/or datasets of its own. The <i>TimeSeries</i> makes
+      this process of defining such pairs more hierarchical.</p>
+    <p style="margin-bottom: 0in"><br>
+    </p>
+    <p style="margin-bottom: 0in">Each <i>TimeSeries</i> has its own HDF5
+      group, and all datasets belonging to a <i>TimeSeries</i> are in that
+      group. The group contains time and data components and users are free
+      to add additional fields as necessary. There are two time objects
+      represented. The first, <i>timestamps</i>, stores time information
+      that is corrected to the experiment's time base (i.e., aligned to a
+      master clock, with time-zero aligned to the starting time of the
+      experiment). This field is used for data processing and subsequent
+      scientific analysis. The second, <i>sync</i>, is an optional group
+      that can be used to store the sample times as reported by the
+      acquisition/stimulus hardware, before samples are converted to a
+      common timebase and corrected relative to the master clock. This
+      approach allows the NWB format to support streaming of data directly
+      from hardware sources.</p>
+      
+<h3 id="<TimeSeries>">&lt;TimeSeries&gt;</h3>
+<p>General purpose time series.</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>&lt;TimeSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;TimeSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;ancestry (attr)</i></td><td>text</td><td>The class-hierarchy of this TimeSeries, with one entry in the array for each ancestor. An alternative and equivalent description is that this TimeSeries object contains the datasets defined for all of the TimeSeries classes listed. The class hierarchy is described more fully below. </td><td> For example: [0]=TimeSeries, [1]=ElectricalSeries [2]=PatchClampSeries. The hierarchical order should be preserved in the array -- i.e., the parent object of subclassed element N in the array should be element N-1</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;comments (attr)</i></td><td>text</td><td colspan="2">Human-readable comments about the TimeSeries. This second descriptive field can be used to store additional information, or descriptive information if the primary description field is populated with a computer-readable string.</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;data_link (attr)</i></td><td>text array; dims: ['num_dlinks']</td><td>A sorted list of the paths of all TimeSeries that share a link to the same data field. Example element of list: "/stimulus/presentation/Sweep_0"` </td><td> Attribute is only present if links are present. List should include the path to this TimeSeries also. <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td><i>.&nbsp;description (attr)</i></td><td>text</td><td colspan="2">Description of TimeSeries</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;extern_fields (attr)</i></td><td>text array; dims: ['num_extern_fields']</td><td>List of fields that are HDF5 external links.</td><td> Only present if one or more datasets is set to an HDF5 external link. <em>(Automatically created)</em></td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;help (attr)</i></td><td>text</td><td colspan="2">Short description indicating what this type of TimeSeries stores.</td><td>no</td></tr>
+<tr><td><i>.&nbsp;missing_fields (attr)</i></td><td>text array; dims: ['num_missing_fields']</td><td>List of fields that are not optional (i.e. either required or recommended parts of the TimeSeries) that are missing. The list can also include additional identifiers, as long as they are not present in the group, whether or not they optional.</td><td> Only present if one or more required or recommended fields are missing. Note that a missing required field (such as data or timestamps) should generate an error by the API <em>(Automatically created)</em></td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;neurodata_type (attr)</i></td><td>text</td><td colspan="2">Value is the string "TimeSeries". (const)</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;source (attr)</i></td><td>text</td><td colspan="2">Name of TimeSeries or Modules that serve as the source for the data contained here. It can also be the name of a device, for stimulus or acquisition data</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;timestamp_link (attr)</i></td><td>text array; dims: ['num_tslinks']</td><td>A sorted list of the paths of all TimeSeries that share a link to the same timestamps field.  Example element of list: "/acquisition/timeseries/lick_trace" </td><td> Attribute is only present if links are present. List should include the path to this TimeSeries also. <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td>.&nbsp;control</td><td>uint8 array; dims: ['num_times']</td><td>Numerical labels that apply to each element in data[]. </td><td> Optional field. If present, the control array should have the same number of elements as data[]. <b>If either control or control_description are present, then both must be present.</b></td><td>no</td></tr>
+<tr><td>.&nbsp;control_description</td><td>text array; dims: ['num_control_values']</td><td>Description of each control value. </td><td> Array length should be as long as the highest number in control minus one, generating an zero-based indexed array for control values. <b>If either control or control_description are present, then both must be present.</b></td><td>no</td></tr>
+<tr><td>.&nbsp;data</td><td>any array; dims: [['num_times'], ['num_times', 'num_d2'], ['num_times', 'num_d2', 'num_d3']]</td><td>Data values. Can also store binary data (eg, image frames) </td><td> This field may be a link to data stored in an external file, especially in the case of raw data.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>The base unit of measure used to store data. This should be in the SI unit. </td><td> This is the SI unit (when appropriate) of the stored data, such as Volts. If the actual data is stored in millivolts, the field 'conversion' below describes how to convert the data to the specified SI unit.</td><td>yes</td></tr>
+<tr><td>.&nbsp;num_samples</td><td>int32</td><td>Number of samples in data, or number of image frames. </td><td> This is important if the length of timestamp and data are different, such as for externally stored stimulus image stacks <em>(Automatically created)</em> <b>Optional under '/stimulus/templates'.</b></td><td>yes</td></tr>
+<tr><td>.&nbsp;starting_time</td><td>float64!</td><td>The timestamp of the first sample. </td><td> When timestamps are uniformly spaced, the timestamp of the first sample can be specified and all subsequent ones calculated from the sampling rate. <b>Either starting_time or timestamps must be present, but not both. Must not be present under '/stimulus/templates'.</b></td><td>no</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;rate (attr)</i></td><td>float32!</td><td>Sampling rate, in Hz </td><td> Rate information is stored in Hz</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>The string "Seconds"</td><td> All timestamps in the file are stored in seconds. Specifically, this is the number of seconds since the start of the experiment (i.e., since session_start_time)</td><td>yes</td></tr>
+<tr><td>.&nbsp;sync</td><td>group</td><td>Lab specific time and sync information as provided directly from hardware devices and that is necessary for aligning all acquired time information to a common timebase. The timestamp array stores time in the common timebase. </td><td> This group will usually only be populated in TimeSeries that are stored external to the NWB file, in files storing raw data. Once timestamp data is calculated, the contents of 'sync' are mostly for archival purposes.</td><td>no</td></tr>
+<tr><td>.&nbsp;timestamps</td><td>float64! array; dims: ['num_times']</td><td>Timestamps for samples stored in data.</td><td> Timestamps here have all been corrected to the common experiment master-clock. Time is stored as seconds and all timestamps are relative to experiment start time. <b>Either starting_time or timestamps must be present, but not both. Must not be present under '/stimulus/templates'.</b></td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;interval (attr)</i></td><td>int32</td><td>The number of samples between each timestamp. </td><td> Presently this value is restricted to 1 (ie, a timestamp for each sample)</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>The string "Seconds" </td><td> All timestamps in the file are stored in seconds. Specifically, this is the number of seconds since the start of the experiment (i.e., since session_start_time)</td><td>yes</td></tr>
+</table>
+
+    <p style="margin-bottom: 0in">When data is streamed from experiment
+      hardware it should be stored in an HDF5 dataset having the same
+      attributes as <i>data</i>, with time information stored as necessary.
+      This allows the raw data files to be separate file-system objects
+      that can be set as read-only once the experiment is complete.
+      <i>TimeSeries</i> objects in /acquisition will link to the <i>data</i>
+      field in the raw time series. Hardware-recorded time data must be
+      corrected to a common time base (e.g., timestamps from all hardware
+      sources aligned) before it can be included in <i>timestamps</i>. The
+      uncorrected time can be stored in the <i>sync</i> group.</p>
+    <p style="margin-bottom: 0in"><br>
+    </p>
+    <p style="margin-bottom: 0in">The group holding the <i>TimeSeries</i>
+      can be used to store additional information (HDF5 datasets) beyond
+      what is required by the specification. I.e., an end user is free to
+      add additional key/value pairs as necessary for their needs. It
+      should be noted that such lab-specific extensions may not be
+      recognized by analysis tools/scripts existing outside the lab.
+      Extensions are described in section
+      <a href="#Extending_the_format">Extending the format</a>).</p>
+    <p style="margin-bottom: 0in"><br>
+    </p>
+    <p style="margin-bottom: 0in">The <i>data</i> element in the
+      <i>TimeSeries</i> will typically be an array of any valid HDF5 data
+      type (e.g., a multi-dimentsional floating point array). The data
+      stored can be in any unit. The attributes of the data field must
+      indicate the SI unit that the data relates to (or appropriate
+      counterpart, such as color-space) and the multiplier necessary to
+      convert stored values to the specified SI unit. </p>
+      
+<h2 id="TimeSeries_Class_Hierarchy">TimeSeries Class Hierarchy</h2>
+
+    <p style="margin-bottom: 0in; page-break-after: avoid">The <i>TimeSeries</i>
+      is a data structure/object. It can be "subclassed" (or extended)
+      to represent
+      more narrowly focused modalities (e.g., electrical versus optical
+      physiology) as well as new modalities (eg, video tracking of whisker
+      positions). When it a <i>TimeSeries</i> is subclassed, new datasets
+      can be added while all datasets of parent classes are
+      either preserved as specified in the parent class
+      or replaced by a new definition (changed).  In the tables
+      that follow, identifiers in the "Id" column that change the definition in
+      the parent
+      class are <u>underlined</u>. An
+      initial set of subclasses are described here. Users are free to
+      define subclasses for their particular requirements. This can be done
+      by creating an extension to the format defining a
+      new <i>TimeSeries</i> subclass (see
+      <a href="#Extending_the_format">Extending the format</a>).</p>
+    <p style="margin-bottom: 0in">All datasets that are defined to be
+      part of TimeSeries have the text attribute 'unit' that stores the
+      unit specified in the documentation.</p>
+        
+<h3 id="<AbstractFeatureSeries>">&lt;AbstractFeatureSeries&gt; extends <a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></h3>
+<p>Abstract features, such as quantitative descriptions of sensory stimuli. The TimeSeries::data field is a 2D array, storing those features (e.g., for visual grating stimulus this might be orientation, spatial frequency and contrast). Null stimuli (eg, uniform gray) can be marked as being an independent feature (eg, 1.0 for gray, 0.0 for actual stimulus) or by storing NaNs for feature values, or through use of the TimeSeries::control fields. A set of features is considered to persist until the next set of features is defined. The final set of features stored should be the null set.</p>
+<p><i>&lt;AbstractFeatureSeries&gt;</i> includes all elements of <i><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>&lt;AbstractFeatureSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;AbstractFeatureSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'AbstractFeatureSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Features of an applied stimulus. This is useful when storing the raw stimulus is impractical". (const)</td><td>no</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>float32 array; dims: ['num_times', 'num_features']</td><td colspan="2">Values of each feature at each time.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;unit (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "see 'feature_units'".</td><td>yes</td></tr>
+<tr><td>.&nbsp;feature_units</td><td>text array; dims: ['num_features']</td><td colspan="2">Units of each feature.</td><td>recommended</td></tr>
+<tr><td>.&nbsp;features</td><td>text array; dims: ['num_features']</td><td colspan="2">Description of the features represented in TimeSeries::data.</td><td>yes</td></tr>
+</table>
+<h3 id="<AnnotationSeries>">&lt;AnnotationSeries&gt; extends <a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></h3>
+<p>Stores, eg, user annotations made during an experiment. The TimeSeries::data[] field stores a text array, and timestamps are stored for each annotation (ie, interval=1). This is largely an alias to a standard TimeSeries storing a text array but that is identifiable as storing annotations in a machine-readable way.</p>
+<p><i>&lt;AnnotationSeries&gt;</i> includes all elements of <i><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>&lt;AnnotationSeries&gt;</td><td>group</td><td>Top level group for &lt;AnnotationSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td>Value is ['TimeSeries', 'AnnotationSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Time-stamped annotations about an experiment". (const)</td><td>no</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>text array; dims: ['num_times']</td><td>Annotations made during an experiment.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;conversion (attr)</i></span></td><td>float32!</td><td>Value is float('NaN') since this does not apply.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;resolution (attr)</i></span></td><td>float32!</td><td>Value is float('NaN') since this does not apply.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;unit (attr)</i></span></td><td>text</td><td>Value is "n/a" to indicate that this does not apply.</td><td>yes</td></tr>
+</table>
+<h3 id="<ElectricalSeries>">&lt;ElectricalSeries&gt; extends <a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></h3>
+<p>Stores acquired voltage data from extracellular recordings. The data field of an ElectricalSeries is an int or float array storing data in Volts. TimeSeries::data array structure: <span class="blue">[num times] [num channels] (or [num_times] for single electrode).</span></p>
+<p><i>&lt;ElectricalSeries&gt;</i> includes all elements of <i><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>&lt;ElectricalSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;ElectricalSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'ElectricalSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Stores acquired voltage data from extracellular recordings". (const)</td><td>no</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>number array; dims: [['num_times'], ['num_times', 'num_channels']]</td><td colspan="2">Recorded voltage data.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;unit (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "volt".</td><td>yes</td></tr>
+<tr><td>.&nbsp;electrode_idx</td><td>int32 array; dims: ['num_channels']</td><td colspan="2">Indicies (zero-based) to electrodes in general/extracellular_ephys/electrode_map.</td><td>yes</td></tr>
+</table>
+<h3 id="<SpikeEventSeries>">&lt;SpikeEventSeries&gt; extends <a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a></h3>
+<p>Stores "snapshots" of spike events (i.e., threshold crossings) in data. This may also be raw data, as reported by ephys hardware. If so, the TimeSeries::description field should describing how events were detected. All SpikeEventSeries should reside in a module (under EventWaveform interface) even if the spikes were reported and stored by hardware. All events span the same recording channels and store snapshots of equal duration. TimeSeries::data array structure: <span class="blue">[num events] [num channels] [num samples] (or [num events] [num samples] for single electrode)</span>.</p>
+<p><i>&lt;SpikeEventSeries&gt;</i> includes all elements of <i><a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>&lt;SpikeEventSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;SpikeEventSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td colspan="2">Value is ['TimeSeries', 'ElectricalSeries', 'SpikeEventSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Snapshots of spike events from data.". (const)</td><td>no</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>float32 array; dims: [['num_events', 'num_samples'], ['num_events', 'num_channels', 'num_samples']]</td><td colspan="2">Spike waveforms.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;unit (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "volt".</td><td>yes</td></tr>
+</table>
+<h3 id="<ImageSeries>">&lt;ImageSeries&gt; extends <a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></h3>
+<p>General image data that is common between acquisition and stimulus time series. Sometimes the image data is stored in the HDF5 file in a raw format while other times it will be stored as an external image file in the host file system. The data field will either be binary data or empty. TimeSeries::data array structure: [frame] [y][x] or [frame][z][y][x].</p>
+<p><i>&lt;ImageSeries&gt;</i> includes all elements of <i><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>&lt;ImageSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;ImageSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'ImageSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Storage object for time-series 2-D image data". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;bits_per_pixel</td><td>int32</td><td colspan="2">Number of bit per image pixel.</td><td>recommended</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>number array; dims: [['x', 'y'], ['frame', 'y', 'x'], ['frame', 'z', 'y', 'x']]</td><td colspan="2">Either binary data containing image or empty. <b>Either 'external_file' or 'data' must be specified, but not both</b></td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>The base unit of measure used to store data. This should be in the SI unit. </td><td> This is the SI unit (when appropriate) of the stored data, such as Volts. If the actual data is stored in millivolts, the field 'conversion' below describes how to convert the data to the specified SI unit.</td><td>yes</td></tr>
+<tr><td>.&nbsp;dimension</td><td>int32 array; dims: ['rank']</td><td colspan="2">Number of pixels on x, y, (and z) axes.</td><td>recommended</td></tr>
+<tr><td>.&nbsp;external_file</td><td>text array; dims: ['num_files']</td><td colspan="2">Path or URL to one or more external file(s). Field only present if format=external. NOTE: this is only relevant if the image is stored in the file system as one or more image file(s). This field should NOT be used if the image is stored in another HDF5 file and that file is HDF5 linked to this file. <b>Either 'external_file' or 'data' must be specified, but not both</b></td><td>no</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;starting_frame (attr)</i></td><td>int array; dims: ['num_files']</td><td colspan="2">Each entry is the frame number (within the full ImageSeries) of the first frame in the corresponding external_file entry. This serves as an index to what frames each file contains, allowing random access.Zero-based indexing is used.  (The first element will always be zero).</td><td>yes</td></tr>
+<tr><td>.&nbsp;format</td><td>text</td><td colspan="2">Format of image. If this is 'external' then the field external_file contains the path or URL information to that file. For tiff, png, jpg, etc, the binary representation of the image is stored in data. If the format is raw then the fields bit_per_pixel and dimension are used. For raw images, only a single channel is stored (eg, red).</td><td>recommended</td></tr>
+</table>
+<h3 id="<ImageMaskSeries>">&lt;ImageMaskSeries&gt; extends <a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a></h3>
+<p>An alpha mask that is applied to a presented visual stimulus. The data[] array contains an array of mask values that are applied to the displayed image. Mask values are stored as RGBA. Mask can vary with time. The timestamps array indicates the starting time of a mask, and that mask pattern continues until it's explicitly changed.</p>
+<p><i>&lt;ImageMaskSeries&gt;</i> includes all elements of <i><a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>&lt;ImageMaskSeries&gt;</td><td>group</td><td>Top level group for &lt;ImageMaskSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'ImageSeries', 'ImageMaskSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "An alpha mask that is applied to a presented visual stimulus". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;masked_imageseries</td><td>link; target type=<a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a> (or subtype)</td><td>Link to ImageSeries that mask is applied to.</td><td>yes</td></tr>
+<tr><td>.&nbsp;masked_imageseries_path</td><td>text</td><td>Path to linked ImageSeries <em>(Automatically created)</em></td><td>yes</td></tr>
+</table>
+<h3 id="<OpticalSeries>">&lt;OpticalSeries&gt; extends <a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a></h3>
+<p>Image data that is presented or recorded. A stimulus template movie will be stored only as an image. When the image is presented as stimulus, additional data is required, such as field of view (eg, how much of the visual field the image covers, or how what is the area of the target being imaged). If the OpticalSeries represents acquired imaging data, orientation is also important.</p>
+<p><i>&lt;OpticalSeries&gt;</i> includes all elements of <i><a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>&lt;OpticalSeries&gt;</td><td>group</td><td>Top level group for &lt;OpticalSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'ImageSeries', 'OpticalSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Time-series image stack for optical recording or stimulus". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;distance</td><td>float32</td><td>Distance from camera/monitor to target/eye.</td><td>recommended</td></tr>
+<tr><td>.&nbsp;field_of_view</td><td>float32 array; dims: ['fov']</td><td>Width, height and depth of image, or imaged area (meters).</td><td>recommended</td></tr>
+<tr><td>.&nbsp;orientation</td><td>text</td><td>Description of image relative to some reference frame (e.g., which way is up). Must also specify frame of reference.</td><td>recommended</td></tr>
+</table>
+<br />
+<p>Structured dimension(s):</p>
+<table class="dimensions">
+<tr><th>Dimension</th><th colspan="3">Components <span class="notbold">[ name (unit) ]</span></th></tr>
+<tr><td>fov (option 1)</td><td>width (meter)</td><td>height (meter)</td><td>&nbsp;</td></tr>
+<tr><td>fov (option 2)</td><td>width (meter)</td><td>height (meter)</td><td>depth (meter)</td></tr>
+</table>
+<h3 id="<TwoPhotonSeries>">&lt;TwoPhotonSeries&gt; extends <a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a></h3>
+<p>A special case of optical imaging.</p>
+<p><i>&lt;TwoPhotonSeries&gt;</i> includes all elements of <i><a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>&lt;TwoPhotonSeries&gt;</td><td>group</td><td>Top level group for &lt;TwoPhotonSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'ImageSeries', 'TwoPhotonSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Image stack recorded from 2-photon microscope". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;field_of_view</td><td>float32 array; dims: ['whd']</td><td>Width, height and depth of image, or imaged area (meters).</td><td>recommended</td></tr>
+<tr><td>.&nbsp;imaging_plane</td><td>text</td><td>Name of imaging plane description in /general/optophysiology.</td><td>yes</td></tr>
+<tr><td>.&nbsp;pmt_gain</td><td>float32</td><td>Photomultiplier gain</td><td>recommended</td></tr>
+<tr><td>.&nbsp;scan_line_rate</td><td>float32</td><td>Lines imaged per second. This is also stored in /general/optophysiology but is kept here as it is useful information for analysis, and so good to be stored w/ the actual data.</td><td>recommended</td></tr>
+</table>
+<br />
+<p>Structured dimension(s):</p>
+<table class="dimensions">
+<tr><th>Dimension</th><th colspan="3">Components <span class="notbold">[ name (unit) ]</span></th></tr>
+<tr><td>whd</td><td>width (meter)</td><td>height (meter)</td><td>depth (meter)</td></tr>
+</table>
+<h3 id="<IndexSeries>">&lt;IndexSeries&gt; extends <a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></h3>
+<p>Stores indices to (typically image) frames stored in another TimeSeries. Its purpose is to allow a static image stack to be stored somewhere, and the images in the stack to be referenced out-of-order. This can be for the display of individual images, or of movie segments (as a movie is simply a series of images). The data field stores the index of the frame in the referenced TimeSeries, and the timestamps array indicates when that frame was displayed. Can also be used for non-image data.</p>
+<p><i>&lt;IndexSeries&gt;</i> includes all elements of <i><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>&lt;IndexSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;IndexSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'IndexSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "A sequence that is generated from an existing image stack. Frames can be presented in an arbitrary order. The data[] field stores frame number in reference stack". (const)</td><td>no</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>int array; dims: ['num_times']</td><td colspan="2">Index of the frame in the referenced ImageSeries.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>The base unit of measure used to store data. This should be in the SI unit. </td><td> This is the SI unit (when appropriate) of the stored data, such as Volts. If the actual data is stored in millivolts, the field 'conversion' below describes how to convert the data to the specified SI unit.</td><td>yes</td></tr>
+<tr><td>.&nbsp;indexed_timeseries</td><td>link; target type=<a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> (or subtype)</td><td colspan="2">HDF5 link to TimeSeries containing images that are indexed.</td><td>yes</td></tr>
+<tr><td>.&nbsp;indexed_timeseries_path</td><td>text</td><td colspan="2">Path to linked TimeSeries <em>(Automatically created)</em></td><td>yes</td></tr>
+</table>
+<h3 id="<IntervalSeries>">&lt;IntervalSeries&gt; extends <a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></h3>
+<p>Stores intervals of data. The timestamps field stores the beginning and end of intervals. The data field stores whether the interval just started (&lt;0 value) or ended (&gt;0 value). Different interval types can be represented in the same series by using multiple key values (eg, 1 for feature A, 2 for feature B, 3 for feature C, etc). The field data stores an 8-bit integer. This is largely an alias of a standard TimeSeries but that is identifiable as representing time intervals in a machine-readable way.</p>
+<p><i>&lt;IntervalSeries&gt;</i> includes all elements of <i><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>&lt;IntervalSeries&gt;</td><td>group</td><td>Top level group for &lt;IntervalSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td>Value is ['TimeSeries', 'IntervalSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Stores the start and stop times for events". (const)</td><td>no</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>int8 array; dims: ['num_times']</td><td>&gt;0 if interval started, &lt;0 if interval ended.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;conversion (attr)</i></span></td><td>float32!</td><td>Value is the number "nan"</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;resolution (attr)</i></span></td><td>float32!</td><td>Value is the number "nan"</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;unit (attr)</i></span></td><td>text</td><td>Value is the string "n/a".</td><td>yes</td></tr>
+</table>
+<h3 id="<OptogeneticSeries>">&lt;OptogeneticSeries&gt; extends <a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></h3>
+<p>Optogenetic stimulus.  The data[] field is in unit of watts.</p>
+<p><i>&lt;OptogeneticSeries&gt;</i> includes all elements of <i><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>&lt;OptogeneticSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;OptogeneticSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'OptogeneticSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Optogenetic stimulus". (const)</td><td>no</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>float32 array; dims: ['num_times']</td><td colspan="2">Applied power for optogenetic stimulus.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;unit (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "watt".</td><td>yes</td></tr>
+<tr><td>.&nbsp;site</td><td>text</td><td colspan="2">Name of site description in general/optogentics.</td><td>yes</td></tr>
+</table>
+<h3 id="<PatchClampSeries>">&lt;PatchClampSeries&gt; extends <a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></h3>
+<p>Stores stimulus or response current or voltage. Superclass definition for patch-clamp data (this class should not be instantiated directly).</p>
+<p><i>&lt;PatchClampSeries&gt;</i> includes all elements of <i><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>&lt;PatchClampSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;PatchClampSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'PatchClampSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Superclass definition for patch-clamp data". (const)</td><td>no</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>number array; dims: ['num_times']</td><td colspan="2">Recorded voltage or current.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>The base unit of measure used to store data. This should be in the SI unit. </td><td> This is the SI unit (when appropriate) of the stored data, such as Volts. If the actual data is stored in millivolts, the field 'conversion' below describes how to convert the data to the specified SI unit.</td><td>yes</td></tr>
+<tr><td>.&nbsp;electrode_name</td><td>text</td><td colspan="2">Name of electrode entry in /general/intracellular_ephys.</td><td>yes</td></tr>
+<tr><td>.&nbsp;gain</td><td>float</td><td colspan="2">Units: Volt/Amp (v-clamp) or Volt/Volt (c-clamp)</td><td>recommended</td></tr>
+</table>
+<h3 id="<CurrentClampSeries>">&lt;CurrentClampSeries&gt; extends <a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a></h3>
+<p>Stores voltage data recorded from intracellular current-clamp recordings. A corresponding CurrentClampStimulusSeries (stored separately as a stimulus) is used to store the current injected.</p>
+<p><i>&lt;CurrentClampSeries&gt;</i> includes all elements of <i><a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>&lt;CurrentClampSeries&gt;</td><td>group</td><td>Top level group for &lt;CurrentClampSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'PatchClampSeries', 'CurrentClampSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Voltage recorded from cell during current-clamp recording". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;bias_current</td><td>float32</td><td>Unit: Amp</td><td>recommended</td></tr>
+<tr><td>.&nbsp;bridge_balance</td><td>float32</td><td>Unit: Ohm</td><td>recommended</td></tr>
+<tr><td>.&nbsp;capacitance_compensation</td><td>float32</td><td>Unit: Farad</td><td>recommended</td></tr>
+</table>
+<h3 id="<IZeroClampSeries>">&lt;IZeroClampSeries&gt; extends <a href="#%3CCurrentClampSeries%3E">&lt;CurrentClampSeries&gt;</a></h3>
+<p>Stores recorded voltage data from intracellular recordings when all current and amplifier settings are off (i.e., CurrentClampSeries fields will be zero). There is no CurrentClampStimulusSeries associated with an IZero series because the amplifier is disconnected and no stimulus can reach the cell.</p>
+<p><i>&lt;IZeroClampSeries&gt;</i> includes all elements of <i><a href="#%3CCurrentClampSeries%3E">&lt;CurrentClampSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>&lt;IZeroClampSeries&gt;</td><td>group</td><td>Top level group for &lt;IZeroClampSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['4']</td><td>Value is ['TimeSeries', 'PatchClampSeries', 'CurrentClampSeries', 'IZeroClampSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Voltage from intracellular recordings when all current and amplifier settings are off". (const)</td><td>no</td></tr>
+</table>
+<h3 id="<CurrentClampStimulusSeries>">&lt;CurrentClampStimulusSeries&gt; extends <a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a></h3>
+<p>Aliases to standard PatchClampSeries. Its functionality is to better tag PatchClampSeries for machine (and human) readability of the file.</p>
+<p><i>&lt;CurrentClampStimulusSeries&gt;</i> includes all elements of <i><a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>&lt;CurrentClampStimulusSeries&gt;</td><td>group</td><td>Top level group for &lt;CurrentClampStimulusSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'PatchClampSeries', 'CurrentClampStimulusSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Stimulus current applied during current clamp recording". (const)</td><td>no</td></tr>
+</table>
+<h3 id="<VoltageClampSeries>">&lt;VoltageClampSeries&gt; extends <a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a></h3>
+<p>Stores current data recorded from intracellular voltage-clamp recordings. A corresponding VoltageClampStimulusSeries (stored separately as a stimulus) is used to store the voltage injected.</p>
+<p><i>&lt;VoltageClampSeries&gt;</i> includes all elements of <i><a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>&lt;VoltageClampSeries&gt;</td><td>group</td><td>Top level group for &lt;VoltageClampSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'PatchClampSeries', 'VoltageClampSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Current recorded from cell during voltage-clamp recording". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;capacitance_fast</td><td>float32</td><td>Unit: Farad</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Value is the string "Farad".</td><td>recommended</td></tr>
+<tr><td>.&nbsp;capacitance_slow</td><td>float32</td><td>Unit: Farad</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Value is the string "Farad".</td><td>recommended</td></tr>
+<tr><td>.&nbsp;resistance_comp_bandwidth</td><td>float32</td><td>Unit: Hz</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Value is the string "Hz".</td><td>recommended</td></tr>
+<tr><td>.&nbsp;resistance_comp_correction</td><td>float32</td><td>Unit: %</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Value is the string "pecent".</td><td>recommended</td></tr>
+<tr><td>.&nbsp;resistance_comp_prediction</td><td>float32</td><td>Unit: %</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Value is the string "pecent".</td><td>recommended</td></tr>
+<tr><td>.&nbsp;whole_cell_capacitance_comp</td><td>float32</td><td>Unit: Farad</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Value is the string "Farad".</td><td>recommended</td></tr>
+<tr><td>.&nbsp;whole_cell_series_resistance_comp</td><td>float32</td><td>Unit: Ohm</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Value is the string "Ohm".</td><td>recommended</td></tr>
+</table>
+<h3 id="<VoltageClampStimulusSeries>">&lt;VoltageClampStimulusSeries&gt; extends <a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a></h3>
+<p>Aliases to standard PatchClampSeries. Its functionality is to better tag PatchClampSeries for machine (and human) readability of the file.</p>
+<p><i>&lt;VoltageClampStimulusSeries&gt;</i> includes all elements of <i><a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>&lt;VoltageClampStimulusSeries&gt;</td><td>group</td><td>Top level group for &lt;VoltageClampStimulusSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['3']</td><td>Value is ['TimeSeries', 'PatchClampSeries', 'VoltageClampStimulusSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Stimulus voltage applied during voltage clamp recording". (const)</td><td>no</td></tr>
+</table>
+<h3 id="<RoiResponseSeries>">&lt;RoiResponseSeries&gt; extends <a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></h3>
+<p>ROI responses over an imaging plane. Each row in data[] should correspond to the signal from one ROI.</p>
+<p><i>&lt;RoiResponseSeries&gt;</i> includes all elements of <i><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>&lt;RoiResponseSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;RoiResponseSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'RoiResponseSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "ROI responses over an imaging plane. Each row in data[] should correspond to the signal from one ROI". (const)</td><td>no</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>float32 array; dims: ['num_times', 'num_ROIs']</td><td colspan="2">Signals from ROIs</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>The base unit of measure used to store data. This should be in the SI unit. </td><td> This is the SI unit (when appropriate) of the stored data, such as Volts. If the actual data is stored in millivolts, the field 'conversion' below describes how to convert the data to the specified SI unit.</td><td>yes</td></tr>
+<tr><td>.&nbsp;roi_names</td><td>text array; dims: ['num_ROIs']</td><td colspan="2">List of ROIs represented, one name for each row of data[].</td><td>yes</td></tr>
+<tr><td>.&nbsp;segmentation_interface</td><td>link; target type=<a href="#ImageSegmentation">ImageSegmentation</a> (or subtype)</td><td colspan="2">HDF5 link to image segmentation module defining ROIs.</td><td>yes</td></tr>
+<tr><td>.&nbsp;segmentation_interface_path</td><td>text</td><td colspan="2">Path to segmentation module. <em>(Automatically created)</em></td><td>yes</td></tr>
+</table>
+<h3 id="<SpatialSeries>">&lt;SpatialSeries&gt; extends <a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></h3>
+<p>Direction, e.g., of gaze or travel, or position. The TimeSeries::data field is a 2D array storing position or direction relative to some reference frame. Array structure: [num measurements] [num dimensions]. Each SpatialSeries has a text dataset reference_frame that indicates the zero-position, or the zero-axes for direction. For example, if representing gaze direction, "straight-ahead" might be a specific pixel on the monitor, or some other point in space. For position data, the 0,0 point might be the top-left corner of an enclosure, as viewed from the tracking camera. The unit of data will indicate how to interpret SpatialSeries values.</p>
+<p><i>&lt;SpatialSeries&gt;</i> includes all elements of <i><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>&lt;SpatialSeries&gt;</td><td>group</td><td colspan="2">Top level group for &lt;SpatialSeries&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;ancestry (attr)</i></span></td><td>text array; dims: ['2']</td><td colspan="2">Value is ['TimeSeries', 'SpatialSeries'] (const)</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Stores points in space over time. The data[] array structure is [num samples][num spatial dimensions]". (const)</td><td>no</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;data</span></td><td>number array; dims: ['num_times', 'num_features']</td><td colspan="2">2-D array storing position or direction relative to some reference frame.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;.&nbsp;unit (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "meter".</td><td>yes</td></tr>
+<tr><td>.&nbsp;reference_frame</td><td>text</td><td colspan="2">Description defining what exactly 'straight-ahead' means.</td><td>recommended</td></tr>
+</table>
+<h2 id="Modules">Modules</h2>
+
+         <p>
+        NWB uses <i>modules</i> to store data for&mdash;and represent the results of&mdash;common
+        data processing steps, such as spike sorting and image segmentation, that occur
+        before scientific analysis of the data.  Modules store the data
+      used by software tools to calculate these intermediate results. Each
+      module provides a list of the data it makes available, and it is free
+      to provide whatever additional data that the module generates.
+      Additional documentation is required for data that goes beyond
+      standard definitions.  All modules are stored directly under
+        group <a href="#/processing">/processing</a>.  The name of each module
+        is chosen by the data provider (i.e. modules have a "variable" name).
+        The particular data within each module is specified by one or more
+        <i>interfaces</i>, which are groups residing directly within a module.
+        Each interface extends (contains the attributes in) group
+        <a href="#%3CInterface%3E"><i>&lt;Interface&gt;</i></a> and has a fixed
+        name (e.g. <i>ImageSegmentation</i>) that suggests the
+        type of data it contains.  The names of the interfaces within a given
+        module are listed in the "interfaces" attribute for the module.
+        The different types of Interfaces are described below.
+        </p><br />
+        
+<h3 id="<Module>">&lt;Module&gt;</h3>
+<p>Module.  Name should be descriptive. Stores a collection of related data organized by contained interfaces.  Each interface is a contract specifying content related to a particular type of data.</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>&lt;Module&gt;</td><td>group</td><td colspan="2">Top level group for &lt;Module&gt;. Name should be descriptive.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;description (attr)</i></td><td>text</td><td colspan="2">Description of Module</td><td>no</td></tr>
+<tr><td><i>.&nbsp;interfaces (attr)</i></td><td>text array; dims: ['num_interfaces']</td><td>Names of the data interfaces offered by this module. </td><td> E.g., [0]="EventDetection", [1]="Clustering", [2]="FeatureExtraction" <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td><i>.&nbsp;neurodata_type (attr)</i></td><td>text</td><td colspan="2">The string "Module"</td><td>yes</td></tr>
+<tr><td>.&nbsp;<a href="#%3CInterface%3E">&lt;Interface&gt;</a> subtype</td><td>group</td><td colspan="2">Any subtype of <a href="#%3CInterface%3E">&lt;Interface&gt;</a>. These include: <a href="#BehavioralEpochs">BehavioralEpochs</a>, <a href="#BehavioralEvents">BehavioralEvents</a>, <a href="#BehavioralTimeSeries">BehavioralTimeSeries</a>, <a href="#ClusterWaveforms">ClusterWaveforms</a>, <a href="#Clustering">Clustering</a>, <a href="#CompassDirection">CompassDirection</a>, <a href="#DfOverF">DfOverF</a>, <a href="#EventDetection">EventDetection</a>, <a href="#EventWaveform">EventWaveform</a>, <a href="#EyeTracking">EyeTracking</a>, <a href="#FeatureExtraction">FeatureExtraction</a>, <a href="#FilteredEphys">FilteredEphys</a>, <a href="#Fluorescence">Fluorescence</a>, <a href="#ImageSegmentation">ImageSegmentation</a>, <a href="#ImagingRetinotopy">ImagingRetinotopy</a>, <a href="#LFP">LFP</a>, <a href="#MotionCorrection">MotionCorrection</a>, <a href="#Position">Position</a>, <a href="#PupilTracking">PupilTracking</a>, <a href="#UnitTimes">UnitTimes</a></td><td>no</td></tr>
+</table>
+<h3 id="<Interface>">&lt;Interface&gt;</h3>
+<p>The attributes specified here are included in all interfaces.</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>&lt;Interface&gt;</td><td>group</td><td>Top level group for &lt;Interface&gt;. This is an abstract group which can only be used by subclassing.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;help (attr)</i></td><td>text</td><td>Short description of what this type of Interface contains.</td><td>no</td></tr>
+<tr><td><i>.&nbsp;neurodata_type (attr)</i></td><td>text</td><td>Value is the string "Interface".</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;source (attr)</i></td><td>text</td><td>Path to the origin of the data represented in this interface.</td><td>yes</td></tr>
+</table>
+<h3 id="BehavioralEpochs">BehavioralEpochs</h3>
+<p>TimeSeries for storing behavoioral epochs.  The objective of this and the other two Behavioral interfaces (e.g. BehavioralEvents and BehavioralTimeSeries) is to provide generic hooks for software tools/scripts. This allows a tool/script to take the output one specific interface (e.g., UnitTimes) and plot that data relative to another data modality (e.g., behavioral events) without having to define all possible modalities in advance. Declaring one of these interfaces means that one or more TimeSeries of the specified type is published. These TimeSeries should reside in a group having the same name as the interface. For example, if a BehavioralTimeSeries interface is declared, the module will have one or more TimeSeries defined in the module sub-group "BehavioralTimeSeries". BehavioralEpochs should use IntervalSeries. BehavioralEvents is used for irregular events. BehavioralTimeSeries is for continuous data.</p>
+<p><i>BehavioralEpochs</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>BehavioralEpochs</td><td>group</td><td>Top level group for BehavioralEpochs.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "General container for storing behavorial epochs". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#%3CIntervalSeries%3E">&lt;IntervalSeries&gt;</a> or subtype</td><td>group</td><td><a href="#%3CIntervalSeries%3E">&lt;IntervalSeries&gt;</a> or any subtype.</td><td>yes</td></tr>
+</table>
+<h3 id="BehavioralEvents">BehavioralEvents</h3>
+<p>TimeSeries for storing behavioral events. See description of <a href="#BehavioralEpochs">BehavioralEpochs</a> for more details.</p>
+<p><i>BehavioralEvents</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>BehavioralEvents</td><td>group</td><td>Top level group for BehavioralEvents.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "General container for storing event series". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> or subtype</td><td>group</td><td><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> or any subtype. Subtypes include: <a href="#%3CAbstractFeatureSeries%3E">&lt;AbstractFeatureSeries&gt;</a>, <a href="#%3CAnnotationSeries%3E">&lt;AnnotationSeries&gt;</a>, <a href="#%3CCurrentClampSeries%3E">&lt;CurrentClampSeries&gt;</a>, <a href="#%3CCurrentClampStimulusSeries%3E">&lt;CurrentClampStimulusSeries&gt;</a>, <a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a>, <a href="#%3CIZeroClampSeries%3E">&lt;IZeroClampSeries&gt;</a>, <a href="#%3CImageMaskSeries%3E">&lt;ImageMaskSeries&gt;</a>, <a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a>, <a href="#%3CIndexSeries%3E">&lt;IndexSeries&gt;</a>, <a href="#%3CIntervalSeries%3E">&lt;IntervalSeries&gt;</a>, <a href="#%3COpticalSeries%3E">&lt;OpticalSeries&gt;</a>, <a href="#%3COptogeneticSeries%3E">&lt;OptogeneticSeries&gt;</a>, <a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a>, <a href="#%3CRoiResponseSeries%3E">&lt;RoiResponseSeries&gt;</a>, <a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a>, <a href="#%3CSpikeEventSeries%3E">&lt;SpikeEventSeries&gt;</a>, <a href="#%3CTwoPhotonSeries%3E">&lt;TwoPhotonSeries&gt;</a>, <a href="#%3CVoltageClampSeries%3E">&lt;VoltageClampSeries&gt;</a>, <a href="#%3CVoltageClampStimulusSeries%3E">&lt;VoltageClampStimulusSeries&gt;</a></td><td>yes</td></tr>
+</table>
+<h3 id="BehavioralTimeSeries">BehavioralTimeSeries</h3>
+<p>TimeSeries for storing Behavoioral time series data.See description of <a href="#BehavioralEpochs">BehavioralEpochs</a> for more details.</p>
+<p><i>BehavioralTimeSeries</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>BehavioralTimeSeries</td><td>group</td><td>Top level group for BehavioralTimeSeries.</td><td>yes</td></tr>
+<tr><td>.&nbsp;<a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> or subtype</td><td>group</td><td><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> or any subtype. Subtypes include: <a href="#%3CAbstractFeatureSeries%3E">&lt;AbstractFeatureSeries&gt;</a>, <a href="#%3CAnnotationSeries%3E">&lt;AnnotationSeries&gt;</a>, <a href="#%3CCurrentClampSeries%3E">&lt;CurrentClampSeries&gt;</a>, <a href="#%3CCurrentClampStimulusSeries%3E">&lt;CurrentClampStimulusSeries&gt;</a>, <a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a>, <a href="#%3CIZeroClampSeries%3E">&lt;IZeroClampSeries&gt;</a>, <a href="#%3CImageMaskSeries%3E">&lt;ImageMaskSeries&gt;</a>, <a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a>, <a href="#%3CIndexSeries%3E">&lt;IndexSeries&gt;</a>, <a href="#%3CIntervalSeries%3E">&lt;IntervalSeries&gt;</a>, <a href="#%3COpticalSeries%3E">&lt;OpticalSeries&gt;</a>, <a href="#%3COptogeneticSeries%3E">&lt;OptogeneticSeries&gt;</a>, <a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a>, <a href="#%3CRoiResponseSeries%3E">&lt;RoiResponseSeries&gt;</a>, <a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a>, <a href="#%3CSpikeEventSeries%3E">&lt;SpikeEventSeries&gt;</a>, <a href="#%3CTwoPhotonSeries%3E">&lt;TwoPhotonSeries&gt;</a>, <a href="#%3CVoltageClampSeries%3E">&lt;VoltageClampSeries&gt;</a>, <a href="#%3CVoltageClampStimulusSeries%3E">&lt;VoltageClampStimulusSeries&gt;</a></td><td>yes</td></tr>
+</table>
+<h3 id="ClusterWaveforms">ClusterWaveforms</h3>
+<p>The mean waveform shape, including standard deviation, of the different clusters. Ideally, the waveform analysis should be performed on data that is only high-pass filtered. This is a separate module because it is expected to require updating. For example, IMEC probes may require different storage requirements to store/display mean waveforms, requiring a new interface or an extension of this one.</p>
+<p><i>ClusterWaveforms</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>ClusterWaveforms</td><td>group</td><td>Top level group for ClusterWaveforms.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Mean waveform shape of clusters. Waveforms should be high-pass filtered (ie, not the same bandpass filter used waveform analysis and clustering)". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;clustering_interface</td><td>link; target type=<a href="#Clustering">Clustering</a> (or subtype)</td><td>HDF5 link to Clustering interface that was the source of the clustered data</td><td>yes</td></tr>
+<tr><td>.&nbsp;clustering_interface_path</td><td>text</td><td>Path to linked clustering interface <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td>.&nbsp;waveform_filtering</td><td>text</td><td>Filtering applied to data before generating mean/sd</td><td>yes</td></tr>
+<tr><td>.&nbsp;waveform_mean</td><td>float32 array; dims: ['num_clusters', 'num_samples']</td><td>The mean waveform for each cluster, using the same indices for each wave as cluster numbers in the associated Clustering module (i.e, cluster 3 is in array slot [3]). Waveforms corresponding to gaps in cluster sequence should be empty (e.g., zero- filled)</td><td>yes</td></tr>
+<tr><td>.&nbsp;waveform_sd</td><td>float32 array; dims: ['num_clusters', 'num_samples']</td><td>Stdev of waveforms for each cluster, using the same indices as in mean</td><td>yes</td></tr>
+</table>
+<h3 id="Clustering">Clustering</h3>
+<p>Clustered spike data, whether from automatic clustering tools (e.g., klustakwik) or as a result of manual sorting.</p>
+<p><i>Clustering</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>Clustering</td><td>group</td><td>Top level group for Clustering.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Clustered spike data, whether from automatic clustering tools (eg, klustakwik) or as a result of manual sorting". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;cluster_nums</td><td>int32 array; dims: ['num_clusters']</td><td>List of cluster number that are a part of this set (cluster numbers can be non- continuous) <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td>.&nbsp;description</td><td>text</td><td>Description of clusters or clustering, (e.g. cluster 0 is noise, clusters curated using Klusters, etc)</td><td>yes</td></tr>
+<tr><td>.&nbsp;num</td><td>int32 array; dims: ['num_events']</td><td>Cluster number of each event</td><td>yes</td></tr>
+<tr><td>.&nbsp;peak_over_rms</td><td>float32 array; dims: ['num_clusters']</td><td>Maximum ratio of waveform peak to RMS on any channel in the cluster (provides a basic clustering metric).</td><td>yes</td></tr>
+<tr><td>.&nbsp;times</td><td>float64! array; dims: ['num_events']</td><td>Times of clustered events, in seconds. This may be a link to times field in associated FeatureExtraction module.</td><td>yes</td></tr>
+</table>
+<h3 id="CompassDirection">CompassDirection</h3>
+<p>With a CompassDirection interface, a module publishes a SpatialSeries object representing a floating point value for theta. The SpatialSeries::reference_frame field should indicate what direction corresponds to 0 and which is the direction of rotation (this should be clockwise). The si_unit for the SpatialSeries should be radians or degrees.</p>
+<p><i>CompassDirection</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>CompassDirection</td><td>group</td><td>Top level group for CompassDirection.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Direction as measured radially. Spatial series reference frame should indicate which direction corresponds to zero and what is the direction of positive rotation". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a> or subtype</td><td>group</td><td><a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a> or any subtype.</td><td>yes</td></tr>
+</table>
+<h3 id="DfOverF">DfOverF</h3>
+<p>dF/F information about a region of interest (ROI). Storage hierarchy of dF/F should be the same as for segmentation (ie, same names for ROIs and for image planes).</p>
+<p><i>DfOverF</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>DfOverF</td><td>group</td><td>Top level group for DfOverF.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Df/f over time of one or more ROIs. TimeSeries names should correspond to imaging plane names". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#%3CRoiResponseSeries%3E">&lt;RoiResponseSeries&gt;</a> or subtype</td><td>group</td><td><a href="#%3CRoiResponseSeries%3E">&lt;RoiResponseSeries&gt;</a> or any subtype.</td><td>yes</td></tr>
+</table>
+<h3 id="EventDetection">EventDetection</h3>
+<p>Detected spike events from voltage trace(s).</p>
+<p><i>EventDetection</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>EventDetection</td><td>group</td><td>Top level group for EventDetection.</td><td>yes</td></tr>
+<tr><td>.&nbsp;detection_method</td><td>text</td><td>Description of how events were detected, such as voltage threshold, or dV/dT threshold, as well as relevant values.</td><td>yes</td></tr>
+<tr><td>.&nbsp;source_electricalseries</td><td>link; target type=<a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a> (or subtype)</td><td>HDF5 link to ElectricalSeries that this data was calculated from. Metadata about electrodes and their position can be read from that ElectricalSeries so it's not necessary to mandate that information be stored here</td><td>yes</td></tr>
+<tr><td>.&nbsp;source_electricalseries_path</td><td>text</td><td>Path to linked ElectricalSeries. <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td>.&nbsp;source_idx</td><td>int32 array; dims: ['num_events']</td><td>Indices (zero-based) into source ElectricalSeries::data array corresponding to time of event. Module description should define what is meant by time of event (e.g., .25msec before action potential peak, zero-crossing time, etc). The index points to each event from the raw data</td><td>yes</td></tr>
+<tr><td>.&nbsp;times</td><td>float64! array; dims: ['num_events']</td><td>Timestamps of events, in Seconds</td><td>yes</td></tr>
+</table>
+<h3 id="EventWaveform">EventWaveform</h3>
+<p>Represents either the waveforms of detected events, as extracted from a raw data trace in /acquisition, or the event waveforms that were stored during experiment acquisition.</p>
+<p><i>EventWaveform</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>EventWaveform</td><td>group</td><td>Top level group for EventWaveform.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Waveform of detected extracellularly recorded spike events". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#%3CSpikeEventSeries%3E">&lt;SpikeEventSeries&gt;</a> or subtype</td><td>group</td><td><a href="#%3CSpikeEventSeries%3E">&lt;SpikeEventSeries&gt;</a> or any subtype.</td><td>yes</td></tr>
+</table>
+<h3 id="EyeTracking">EyeTracking</h3>
+<p>Eye-tracking data, representing direction of gaze.</p>
+<p><i>EyeTracking</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>EyeTracking</td><td>group</td><td>Top level group for EyeTracking.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Eye-tracking data, representing direction of gaze". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a> or subtype</td><td>group</td><td><a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a> or any subtype.</td><td>yes</td></tr>
+</table>
+<h3 id="FeatureExtraction">FeatureExtraction</h3>
+<p>Features, such as PC1 and PC2, that are extracted from signals stored in a SpikeEvent TimeSeries or other source.</p>
+<p><i>FeatureExtraction</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>FeatureExtraction</td><td>group</td><td>Top level group for FeatureExtraction.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Container for salient features of detected events". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;description</td><td>text array; dims: ['num_features']</td><td>Description of features (eg, "PC1") for each of the extracted features.</td><td>yes</td></tr>
+<tr><td>.&nbsp;electrode_idx</td><td>int32 array; dims: ['num_channels']</td><td>Indices (zero-based) to electrodes described in the experiment's electrode map array (under /general/extracellular_ephys).</td><td>yes</td></tr>
+<tr><td>.&nbsp;features</td><td>float32 array; dims: ['num_events', 'num_channels', 'num_features']</td><td>Multi-dimensional array of features extracted from each event.</td><td>yes</td></tr>
+<tr><td>.&nbsp;times</td><td>float64! array; dims: ['num_events']</td><td>Times of events that features correspond to (can be a link).</td><td>yes</td></tr>
+</table>
+<h3 id="FilteredEphys">FilteredEphys</h3>
+<p>Ephys data from one or more channels that has been subjected to filtering. Examples of filtered data include Theta and Gamma (LFP has its own interface). FilteredEphys modules publish an ElectricalSeries for each filtered channel or set of channels. The name of each ElectricalSeries is arbitrary but should be informative. The source of the filtered data, whether this is from analysis of another time series or as acquired by hardware, should be noted in each's TimeSeries::description field. There is no assumed 1::1 correspondence between filtered ephys signals and electrodes, as a single signal can apply to many nearby electrodes, and one electrode may have different filtered (e.g., theta and/or gamma) signals represented.</p>
+<p><i>FilteredEphys</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>FilteredEphys</td><td>group</td><td>Top level group for FilteredEphys.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Ephys data from one or more channels that is subjected to filtering, such as for gamma or theta oscillations (LFP has its own interface). Filter properties should be noted in the ElectricalSeries". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a> or subtype</td><td>group</td><td><a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a> or any subtype. Subtypes include: <a href="#%3CSpikeEventSeries%3E">&lt;SpikeEventSeries&gt;</a></td><td>yes</td></tr>
+</table>
+<h3 id="Fluorescence">Fluorescence</h3>
+<p>Fluorescence information about a region of interest (ROI). Storage hierarchy of fluorescence should be the same as for segmentation (ie, same names for ROIs and for image planes).</p>
+<p><i>Fluorescence</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>Fluorescence</td><td>group</td><td>Top level group for Fluorescence.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Fluorescence over time of one or more ROIs. TimeSeries names should correspond to imaging plane names". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#%3CRoiResponseSeries%3E">&lt;RoiResponseSeries&gt;</a> or subtype</td><td>group</td><td><a href="#%3CRoiResponseSeries%3E">&lt;RoiResponseSeries&gt;</a> or any subtype.</td><td>yes</td></tr>
+</table>
+<h3 id="ImageSegmentation">ImageSegmentation</h3>
+<p>Stores pixels in an image that represent different regions of interest (ROIs) or masks. All segmentation for a given imaging plane is stored together, with storage for multiple imaging planes (masks) supported. Each ROI is stored in its own subgroup, with the ROI group containing both a 2D mask and a list of pixels that make up this mask. Segments can also be used for masking neuropil. If segmentation is allowed to change with time, a new imaging plane (or module) is required and ROI names should remain consistent between them.</p>
+<p><i>ImageSegmentation</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>ImageSegmentation</td><td>group</td><td>Top level group for ImageSegmentation.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Stores groups of pixels that define regions of interest from one or more imaging planes". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;&lt;image_plane&gt;</td><td>group</td><td>Group name is human-readable description of imaging plane</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;&lt;roi_name&gt;</td><td>group</td><td>Name of ROI</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;.&nbsp;img_mask</td><td>float32 array; dims: ['num_y', 'num_x']</td><td>ROI mask, represented in 2D ([y][x]) intensity image</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;.&nbsp;pix_mask</td><td>uint16 array; dims: ['num_pixels', '2']</td><td>List of pixels (x,y) that compose the mask</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;.&nbsp;pix_mask_weight</td><td>float32 array; dims: ['num_pixels']</td><td>Weight of each pixel listed in pix_mask</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;.&nbsp;roi_description</td><td>text</td><td>Description of this ROI.</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;description</td><td>text</td><td>Description of image plane, recording wavelength, depth, etc</td><td>recommended</td></tr>
+<tr><td>.&nbsp;.&nbsp;imaging_plane_name</td><td>text</td><td>Name of imaging plane under general/optophysiology</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;reference_images</td><td>group</td><td>Stores image stacks segmentation mask apply to.</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;.&nbsp;&lt;image_name&gt;</td><td><a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a> (or subtype) (group)</td><td>One or more image stacks that the masks apply to (can be one-element stack)</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;roi_list</td><td>text array; dims: ['num_rois']</td><td>List of ROIs in this imaging plane <em>(Automatically created)</em></td><td>yes</td></tr>
+</table>
+<h3 id="ImagingRetinotopy">ImagingRetinotopy</h3>
+<p>Intrinsic signal optical imaging or widefield imaging for measuring retinotopy. Stores orthogonal maps (e.g., altitude/azimuth; radius/theta) of responses to specific stimuli and a combined polarity map from which to identify visual areas.<br />Note: for data consistency, all images and arrays are stored in the format [row][column] and [row, col], which equates to [y][x]. Field of view and dimension arrays may appear backward (i.e., y before x).</p>
+<p><i>ImagingRetinotopy</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>ImagingRetinotopy</td><td>group</td><td>Top level group for ImagingRetinotopy.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Intrinsic signal optical imaging or Widefield imaging for measuring retinotopy". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;axis_1_phase_map</td><td>float32 array; dims: ['num_rows', 'num_cols']</td><td>Phase response to stimulus on the first measured axis</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;dimension (attr)</i></td><td>int32 array; dims: ['row_col']</td><td>Number of rows and columns in the image. NOTE: row, column representation is equivalent to height,width.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;field_of_view (attr)</i></td><td>float array; dims: ['row_col']</td><td>Size of viewing area, in meters</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Unit that axis data is stored in (e.g., degrees)</td><td>yes</td></tr>
+<tr><td>.&nbsp;axis_1_power_map</td><td>float32 array; dims: ['num_rows', 'num_cols']</td><td>Power response on the first measured axis. Response is scaled so 0.0 is no power in the response and 1.0 is maximum relative power.</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;dimension (attr)</i></td><td>int32 array; dims: ['row_col']</td><td>Number of rows and columns in the image. NOTE: row, column representation is equivalent to height,width.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;field_of_view (attr)</i></td><td>float array; dims: ['row_col']</td><td>Size of viewing area, in meters</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Unit that axis data is stored in (e.g., degrees)</td><td>yes</td></tr>
+<tr><td>.&nbsp;axis_2_phase_map</td><td>float32 array; dims: ['num_rows', 'num_cols']</td><td>Phase response to stimulus on the second measured axis</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;dimension (attr)</i></td><td>int32 array; dims: ['row_col']</td><td>Number of rows and columns in the image. NOTE: row, column representation is equivalent to height,width.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;field_of_view (attr)</i></td><td>float array; dims: ['row_col']</td><td>Size of viewing area, in meters</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Unit that axis data is stored in (e.g., degrees)</td><td>yes</td></tr>
+<tr><td>.&nbsp;axis_2_power_map</td><td>float32 array; dims: ['num_rows', 'num_cols']</td><td>Power response on the second measured axis. Response is scaled so 0.0 is no power in the response and 1.0 is maximum relative power.</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;dimension (attr)</i></td><td>int32 array; dims: ['row_col']</td><td>Number of rows and columns in the image. NOTE: row, column representation is equivalent to height,width.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;field_of_view (attr)</i></td><td>float array; dims: ['row_col']</td><td>Size of viewing area, in meters</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>Unit that axis data is stored in (e.g., degrees)</td><td>yes</td></tr>
+<tr><td>.&nbsp;axis_descriptions</td><td>text array; dims: ['2']</td><td>Two-element array describing the contents of the two response axis fields. Description should be something like ['altitude', 'azimuth'] or '['radius', 'theta']</td><td>yes</td></tr>
+<tr><td>.&nbsp;focal_depth_image</td><td>uint16 array; dims: ['num_rows', 'num_cols']</td><td>Gray-scale image taken with same settings/parameters (e.g., focal depth, wavelength) as data collection. Array format: [rows][columns]</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;bits_per_pixel (attr)</i></td><td>int32</td><td>Number of bits used to represent each value. This is necessary to determine maximum (white) pixel value</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;dimension (attr)</i></td><td>int32 array; dims: ['row_col']</td><td>Number of rows and columns in the image. NOTE: row, column representation is equivalent to height,width.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;field_of_view (attr)</i></td><td>float array; dims: ['row_col']</td><td>Size of viewing area, in meters</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;focal_depth (attr)</i></td><td>float</td><td>Focal depth offset, in meters</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;format (attr)</i></td><td>text</td><td>Format of image. Right now only 'raw' supported</td><td>yes</td></tr>
+<tr><td>.&nbsp;sign_map</td><td>float32 array; dims: ['num_rows', 'num_cols']</td><td>Sine of the angle between the direction of the gradient in axis_1 and axis_2</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;dimension (attr)</i></td><td>int32 array; dims: ['row_col']</td><td>Number of rows and columns in the image. NOTE: row, column representation is equivalent to height,width.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;field_of_view (attr)</i></td><td>float array; dims: ['row_col']</td><td>Size of viewing area, in meters.</td><td>recommended</td></tr>
+<tr><td>.&nbsp;vasculature_image</td><td>uint16 array; dims: ['num_rows', 'num_cols']</td><td>Gray-scale anatomical image of cortical surface. Array structure: [rows][columns]</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;bits_per_pixel (attr)</i></td><td>int32</td><td>Number of bits used to represent each value. This is necessary to determine maximum (white) pixel value</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;dimension (attr)</i></td><td>int32 array; dims: ['row_col']</td><td>Number of rows and columns in the image. NOTE: row, column representation is equivalent to height,width.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;field_of_view (attr)</i></td><td>float array; dims: ['row_col']</td><td>Size of viewing area, in meters</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;format (attr)</i></td><td>text</td><td>Format of image. Right now only 'raw' supported</td><td>yes</td></tr>
+</table>
+<br />
+<p>Structured dimension(s):</p>
+<table class="dimensions">
+<tr><th>Dimension</th><th colspan="2">Components <span class="notbold">[ name (unit) ]</span></th></tr>
+<tr><td>row_col</td><td>row (meter)</td><td>column (meter)</td></tr>
+</table>
+<h3 id="LFP">LFP</h3>
+<p>LFP data from one or more channels. The electrode map in each published ElectricalSeries will identify which channels are providing LFP data. Filter properties should be noted in the ElectricalSeries description or comments field.</p>
+<p><i>LFP</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>LFP</td><td>group</td><td>Top level group for LFP.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "LFP data from one or more channels. Filter properties should be noted in the ElectricalSeries". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a> or subtype</td><td>group</td><td><a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a> or any subtype. Subtypes include: <a href="#%3CSpikeEventSeries%3E">&lt;SpikeEventSeries&gt;</a></td><td>yes</td></tr>
+</table>
+<h3 id="MotionCorrection">MotionCorrection</h3>
+<p>An image stack where all frames are shifted (registered) to a common coordinate system, to account for movement and drift between frames. Note: each frame at each point in time is assumed to be 2-D (has only x & y dimensions).</p>
+<p><i>MotionCorrection</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>MotionCorrection</td><td>group</td><td colspan="2">Top level group for MotionCorrection.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td colspan="2">Value is the string "Image stacks whose frames have been shifted (registered) to account for motion". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;&lt;image stack name&gt;</td><td>group</td><td colspan="2">One of possibly many.  Name should be informative.</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;corrected</td><td><a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a> (or subtype) (group)</td><td colspan="2">Image stack with frames shifted to the common coordinates.</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;original</td><td>link; target type=<a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a> (or subtype)</td><td colspan="2">HDF5 Link to image series that is being registered.</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;original_path</td><td>text</td><td colspan="2">Path to linked original timeseries <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;xy_translation</td><td><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> (group)</td><td colspan="2">Stores the x,y delta necessary to align each frame to the common coordinates, for example, to align each frame to a reference image.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;">.&nbsp;.&nbsp;.&nbsp;data</span></td><td>float array; dims: ['num_times', 'xy']</td><td colspan="2">TimeSeries for storing x,y offset for each image frame.</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;.&nbsp;.&nbsp;conversion (attr)</i></td><td>float32!</td><td colspan="2">Scalar to multiply each element in data to convert it to the specified unit</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;.&nbsp;.&nbsp;resolution (attr)</i></td><td>float32!</td><td>Smallest meaningful difference between values in data, stored in the specified by unit. </td><td> E.g., the change in value of the least significant bit, or a larger number if signal noise is known to be present. If unknown, use NaN</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td>The base unit of measure used to store data. This should be in the SI unit. </td><td> This is the SI unit (when appropriate) of the stored data, such as Volts. If the actual data is stored in millivolts, the field 'conversion' below describes how to convert the data to the specified SI unit.</td><td>yes</td></tr>
+</table>
+<br />
+<p>Structured dimension(s):</p>
+<table class="dimensions">
+<tr><th>Dimension</th><th colspan="2">Components <span class="notbold">[ name (unit) ]</span></th></tr>
+<tr><td>xy</td><td>x (pixels)</td><td>y (pixels)</td></tr>
+</table>
+<h3 id="Position">Position</h3>
+<p>Position data, whether along the x, x/y or x/y/z axis.</p>
+<p><i>Position</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>Position</td><td>group</td><td>Top level group for Position.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Position data, whether along the x, xy or xyz axis". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a> or subtype</td><td>group</td><td><a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a> or any subtype.</td><td>yes</td></tr>
+</table>
+<h3 id="PupilTracking">PupilTracking</h3>
+<p>Eye-tracking data, representing pupil size.</p>
+<p><i>PupilTracking</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>PupilTracking</td><td>group</td><td>Top level group for PupilTracking.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Eye-tracking data, representing pupil size". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a></td><td>group</td><td>General purpose time series.</td><td>yes</td></tr>
+</table>
+<h3 id="UnitTimes">UnitTimes</h3>
+<p>Event times of observed units (e.g. cell, synapse, etc.). The UnitTimes group contains a group for each unit. The name of the group should match the value in the source module, if that is possible/relevant (e.g., name of ROIs from Segmentation module).</p>
+<p><i>UnitTimes</i> includes all elements of <i><a href="#%3CInterface%3E">&lt;Interface&gt;</a></i> with the the following additions or <u>changes</u>:</p>
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>UnitTimes</td><td>group</td><td>Top level group for UnitTimes.</td><td>yes</td></tr>
+<tr><td><span style="text-decoration: underline;"><i>.&nbsp;help (attr)</i></span></td><td>text</td><td>Value is the string "Estimated spike times from a single unit". (const)</td><td>no</td></tr>
+<tr><td>.&nbsp;&lt;unit_N&gt;</td><td>group</td><td>Group storing times for &lt;unit_N&gt;.</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;source</td><td>text</td><td>Name, path or description of where unit times originated. This is necessary only if the info here differs from or is more fine-grained than the interface's source field</td><td>recommended</td></tr>
+<tr><td>.&nbsp;.&nbsp;times</td><td>float64! array; dims: ['num_events']</td><td>Spike time for the units (exact or estimated)</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;unit_description</td><td>text</td><td>Description of the unit (eg, cell type).</td><td>yes</td></tr>
+<tr><td>.&nbsp;unit_list</td><td>text array; dims: ['num_units']</td><td>List of units present. <em>(Automatically created)</em></td><td>yes</td></tr>
+</table>
+<h2 id="File_organization">File organization</h2>
+<h3 id="/acquisition">Group: /acquisition</h3>
+<p> Acquired data includes tracking and experimental data streams (ie, everything measured from the system). If bulky data is stored in the /acquisition group, the data can exist in a separate HDF5 file that is linked to by the file being used for processing and analysis.</p>
+
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>.&nbsp;images</td><td>group</td><td colspan="2">Acquired images <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;&lt;image_X&gt;</td><td>binary array; dims: [['1d_size'], ['num_rows', 'num_cols']]</td><td>Photograph of experiment or experimental setup (video also OK). </td><td> Name is arbitrary.  Data is stored as a single binary object (HDF5 opaque type).</td><td>no</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;.&nbsp;description (attr)</i></td><td>text</td><td>Human description of image. </td><td> If image is of slice data, include slice thickness and orientation, and reference to appropriate entry in /general/slices</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;.&nbsp;format (attr)</i></td><td>text</td><td>Format of the image.  </td><td> eg, jpg, png, mpeg</td><td>yes</td></tr>
+<tr><td>.&nbsp;timeseries</td><td>group</td><td>Acquired TimeSeries.</td><td> When importing acquisition data to an NWB file, all acquisition/tracking/stimulus data must already be aligned to a common time frame. It is assumed that this task has already been performed. <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;<a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> or subtype</td><td>group</td><td colspan="2"><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> or any subtype. Subtypes include: <a href="#%3CAbstractFeatureSeries%3E">&lt;AbstractFeatureSeries&gt;</a>, <a href="#%3CAnnotationSeries%3E">&lt;AnnotationSeries&gt;</a>, <a href="#%3CCurrentClampSeries%3E">&lt;CurrentClampSeries&gt;</a>, <a href="#%3CCurrentClampStimulusSeries%3E">&lt;CurrentClampStimulusSeries&gt;</a>, <a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a>, <a href="#%3CIZeroClampSeries%3E">&lt;IZeroClampSeries&gt;</a>, <a href="#%3CImageMaskSeries%3E">&lt;ImageMaskSeries&gt;</a>, <a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a>, <a href="#%3CIndexSeries%3E">&lt;IndexSeries&gt;</a>, <a href="#%3CIntervalSeries%3E">&lt;IntervalSeries&gt;</a>, <a href="#%3COpticalSeries%3E">&lt;OpticalSeries&gt;</a>, <a href="#%3COptogeneticSeries%3E">&lt;OptogeneticSeries&gt;</a>, <a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a>, <a href="#%3CRoiResponseSeries%3E">&lt;RoiResponseSeries&gt;</a>, <a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a>, <a href="#%3CSpikeEventSeries%3E">&lt;SpikeEventSeries&gt;</a>, <a href="#%3CTwoPhotonSeries%3E">&lt;TwoPhotonSeries&gt;</a>, <a href="#%3CVoltageClampSeries%3E">&lt;VoltageClampSeries&gt;</a>, <a href="#%3CVoltageClampStimulusSeries%3E">&lt;VoltageClampStimulusSeries&gt;</a></td><td>yes</td></tr>
+</table>
+
+    <p style="margin-bottom: 0in">When converting data from another
+      format into NWB, there will be times that some data, particularly the
+      raw data in <i>acquisition</i> and <i>stimulus</i>, is not included
+      as part of the conversion. In such cases, a <i>TimeSeries</i> should
+      be created that represents the missing data, even if the contents of
+      that <i>TimeSeries</i> are empty. This helps to interpret the data in
+      the file.</p>
+      
+<h3 id="/analysis">Group: /analysis</h3>
+<p> The file can store lab-specific and custom data analysis without restriction on its form or schema, reducing data formatting restrictions on end users. Such data should be placed in the analysis group. The analysis data should be documented so that it is sharable with other labs</p>
+
+<p>No members or attributes specified for this group</p>
+<h3 id="/epochs">Group: /epochs</h3>
+<p> An experiment can be separated into one or many logical intervals, with the order and duration of these intervals often definable before the experiment starts. In this document, and in the context of NWB, these intervals are called 'epochs'. Epochs have acquisition and stimulus data associated with them, and different epochs can overlap. Examples of epochs are the time when a rat runs around an enclosure or maze as well as intervening sleep sessions; the presentation of a set of visual stimuli to a mouse running on a wheel; or the uninterrupted presentation of current to a patch-clamped cell. Epochs can be limited to the interval of a particular stimulus, or they can span multiple stimuli. Different windows into the same time series can be achieved by including multiple instances of that time series, each with different start/stop times.</p>
+
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td><i>.&nbsp;tags (attr)</i></td><td>text array; dims: ['num_tags']</td><td>A sorted list of the different tags used by epochs. </td><td>This is a sorted list of all tags that are in any of the &lt;epoch_X&gt;/tags datasets`. <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td>.&nbsp;&lt;epoch_X&gt;</td><td>group</td><td>One of possibly many different experimental epoch</td><td> Name is arbitrary but must be unique within the experiment.</td><td>no</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;links (attr)</i></td><td>text array; dims: ['num_links']</td><td colspan="2">A sorted list mapping TimeSeries entries in the epoch to the path of the TimeSeries within the file. Each entry in the list has the following format: "'<i>&lt;TimeSeries_X&gt;</i>' <b>is</b> '<i>path_to_TimeSeries</i>'", where <i>&lt;TimeSeries_X&gt;</i> is the name assigned to group  &lt;TimeSeries_X&gt; (below). Note that the name and path are both enclosed in single quotes and the word "is" (with a single space before and after) separate them. <b>Example list element:</b> "'auditory_cue' is '/stimulus/presentation/auditory_cue'". <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;neurodata_type (attr)</i></td><td>text</td><td colspan="2">The string "Epoch"</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;&lt;timeseries_X&gt;</td><td>group</td><td>One of possibly many input or output streams recorded during epoch. </td><td> Name is arbitrary and does not have to match the TimeSeries that it refers to.</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;.&nbsp;count</td><td>int32</td><td colspan="2">Number of data samples available in this time series, during this epoch.</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;.&nbsp;idx_start</td><td>int32</td><td>Epoch's start index in TimeSeries data[] field. </td><td> This can be used to calculate location in TimeSeries timestamp[] field</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;.&nbsp;timeseries</td><td>link; target type=<a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> (or subtype)</td><td colspan="2">Link to TimeSeries.  An HDF5 soft-link should be used.</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;description</td><td>text</td><td colspan="2">Description of this epoch (&lt;epoch_X&gt;).</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;start_time</td><td>float64!</td><td colspan="2">Start time of epoch, in seconds</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;stop_time</td><td>float64!</td><td colspan="2">Stop time of epoch, in seconds</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;tags</td><td>text array; dims: ['num_tags']</td><td>User-defined tags used throughout the epochs. Tags are to help identify or categorize epochs. </td><td> E.g., can describe stimulus (if template) or behavioral characteristic (e.g., "lick left")</td><td>no</td></tr>
+</table>
+<h3 id="/general">Group: /general</h3>
+<p> General experimental metadata, including animal strain, experimental protocols, experimenter, devices, etc, are stored under 'general'. Core metadata (e.g., that required to interpret data fields) is stored with the data itself, and implicitly defined by the file specification (eg, time is in seconds). The strategy used here for storing non-core metadata is to use free-form text fields, such as would appear in sentences or paragraphs from a Methods section. Metadata fields are text to enable them to be more general, for example to represent ranges instead of numerical values. Machine-readable metadata is stored as attributes to these free-form datasets. <br /><br />All entries in the below table are to be included when data is present. Unused groups (e.g., intracellular_ephys in an optophysiology experiment) should not be created unless there is data to store within them.</p>
+
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>.&nbsp;__custom</td><td>int</td><td colspan="2">Indicates that this group (general/) is the default location for custom nodes.  This dataset in the format specification is just a flag.  There is no actual data stored in the HDF5 file for this dataset.</td><td>no</td></tr>
+<tr><td>.&nbsp;data_collection</td><td>text</td><td>Notes about data collection and analysis.</td><td> Can be from Methods</td><td>no</td></tr>
+<tr><td>.&nbsp;devices</td><td>group</td><td>Description of hardware devices used during experiment. </td><td> Eg, monitors, ADC boards, microscopes, etc</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;&lt;device_X&gt;</td><td>text</td><td>One of possibly many. Information about device and device description. </td><td> Name should be informative. Contents can be from Methods.</td><td>no</td></tr>
+<tr><td>.&nbsp;experiment_description</td><td>text</td><td>General description of the experiment.</td><td> Can be from Methods</td><td>recommended</td></tr>
+<tr><td>.&nbsp;experimenter</td><td>text</td><td>Name of person who performed the experiment.</td><td> More than one person OK. Can specify roles of different people involved.</td><td>recommended</td></tr>
+<tr><td>.&nbsp;<a href="#/general/extracellular_ephys">extracellular_ephys</a></td><td>group</td><td colspan="2">Metadata related to extracellular electrophysiology.</td><td>no</td></tr>
+<tr><td>.&nbsp;institution</td><td>text</td><td colspan="2">Institution(s) where experiment was performed</td><td>recommended</td></tr>
+<tr><td>.&nbsp;<a href="#/general/intracellular_ephys">intracellular_ephys</a></td><td>group</td><td colspan="2">Metadata related to intracellular electrophysiology</td><td>no</td></tr>
+<tr><td>.&nbsp;lab</td><td>text</td><td colspan="2">Lab where experiment was performed</td><td>recommended</td></tr>
+<tr><td>.&nbsp;notes</td><td>text</td><td>Notes about the experiment.  </td><td> Things particular to this experiment</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#/general/optogenetics">optogenetics</a></td><td>group</td><td colspan="2">Metadata describing optogenetic stimuluation</td><td>no</td></tr>
+<tr><td>.&nbsp;<a href="#/general/optophysiology">optophysiology</a></td><td>group</td><td colspan="2">Metadata related to optophysiology.</td><td>no</td></tr>
+<tr><td>.&nbsp;pharmacology</td><td>text</td><td>Description of drugs used, including how and when they were administered. </td><td> Anesthesia(s), painkiller(s), etc., plus dosage, concentration, etc.</td><td>no</td></tr>
+<tr><td>.&nbsp;protocol</td><td>text</td><td>Experimetnal protocol, if applicable.</td><td> E.g., include IACUC protocol</td><td>no</td></tr>
+<tr><td>.&nbsp;related_publications</td><td>text</td><td>Publication information.</td><td> PMID, DOI, URL, etc. If multiple, concatenate together and describe which is which. such as PMID, DOI, URL, etc</td><td>no</td></tr>
+<tr><td>.&nbsp;session_id</td><td>text</td><td>Lab-specific ID for the session.</td><td> Only 1 session_id per file, with all time aligned to experiment start time.</td><td>recommended</td></tr>
+<tr><td>.&nbsp;slices</td><td>text</td><td colspan="2">Description of slices, including information about preparation thickness, orientation, temperature and bath solution</td><td>no</td></tr>
+<tr><td>.&nbsp;source_script</td><td>text</td><td colspan="2">Script file used to create this NWB file.</td><td>no</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;file_name (attr)</i></td><td>text</td><td colspan="2">Name of script file</td><td>no</td></tr>
+<tr><td>.&nbsp;specifications</td><td>group</td><td colspan="2">Group for storing format specification files.</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;&lt;specification_file&gt;</td><td>text</td><td colspan="2">Dataset for storing contents of a specification file for either the core format or an extension.  Name should match name of file.`</td><td>no</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;.&nbsp;help (attr)</i></td><td>text</td><td colspan="2">Value is the string "Contents of format specification file.".</td><td>no</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;.&nbsp;namespaces (attr)</i></td><td>text array; dims: ['num_namespaces']</td><td colspan="2">Namespaces defined in the file</td><td>yes</td></tr>
+<tr><td>.&nbsp;stimulus</td><td>text</td><td>Notes about stimuli, such as how and where presented.</td><td> Can be from Methods</td><td>no</td></tr>
+<tr><td>.&nbsp;subject</td><td>group</td><td colspan="2">Information about the animal or person from which the data was measured.</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;age</td><td>text</td><td colspan="2">Age of subject</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;description</td><td>text</td><td colspan="2">Description of subject and where subject came from (e.g., breeder, if animal)</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;genotype</td><td>text</td><td>Genetic strain </td><td> If absent, assume Wild Type (WT)</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;sex</td><td>text</td><td colspan="2">Gender of subject</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;species</td><td>text</td><td colspan="2">Species of subject</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;subject_id</td><td>text</td><td colspan="2">ID of animal/person used/participating in experiment (lab convention)</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;weight</td><td>text</td><td colspan="2">Weight at time of experiment, at time of surgery and at other important times</td><td>no</td></tr>
+<tr><td>.&nbsp;surgery</td><td>text</td><td>Narrative description about surgery/surgeries, including date(s) and who performed surgery. </td><td> Much can be copied from Methods</td><td>no</td></tr>
+<tr><td>.&nbsp;virus</td><td>text</td><td colspan="2">Information about virus(es) used in experiments, including virus ID, source, date made, injection location, volume, etc</td><td>no</td></tr>
+</table>
+<h3 id="/general/extracellular_ephys">Group: /general/extracellular_ephys</h3>
+<p>Metadata related to extracellular electrophysiology.</p>
+
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>.&nbsp;&lt;electrode_group_X&gt;</td><td>group</td><td>One of possibly many groups, one for each electrode group. If the groups have a hierarchy, such as multiple probes each having multiple shanks, that hierarchy can be mirrored here, using groups for electrode_probe_X and subgroups for electrode_group_X.</td><td> Name is arbitrary but should be meaningful.</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;description</td><td>text</td><td colspan="2">Description of probe or shank</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;device</td><td>text</td><td colspan="2">Name of device(s) in /general/devices</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;location</td><td>text</td><td>Description of probe location</td><td> E.g., stereotaxic coordinates and other data, e.g., drive placement, angle and orientation and tetrode location in drive and tetrode depth</td><td>yes</td></tr>
+<tr><td>.&nbsp;electrode_group</td><td>text array; dims: ['num_electrodes']</td><td>Identification string for probe, shank or tetrode each electrode resides on. Name should correspond to one of electrode_group_X groups below. </td><td> There's one entry here for each element in electrode_map. All elements in an electrode group should have a functional association, for example all being on the same planar electrode array, or on the same shank.</td><td>yes</td></tr>
+<tr><td>.&nbsp;electrode_map</td><td>number array; dims: ['num_electrodes', 'xyz']</td><td>Physical location of electrode, (x,y,z in meters) </td><td> Location of electrodes relative to one another. This records the points in space. If an electrode is moved, it needs a new entry in the electrode map for its new location. Otherwise format doesn't support using the same electrode in a new location, or processing spikes pre/post drift.</td><td>yes</td></tr>
+<tr><td>.&nbsp;filtering</td><td>text</td><td>Description of filtering used. </td><td> Includes filtering type and parameters, frequency fall- off, etc. If this changes between TimeSeries, filter description should be stored as a text attribute for each TimeSeries.  If this changes between TimeSeries, filter description should be stored as a text attribute for each TimeSeries.</td><td>yes</td></tr>
+<tr><td>.&nbsp;impedance</td><td>text array; dims: ['num_electrodes']</td><td>Impedence of electrodes listed in electrode_map. </td><td> Text, in the event that impedance is stored as range and not a fixed value</td><td>yes</td></tr>
+</table>
+<br />
+<p>Structured dimension(s):</p>
+<table class="dimensions">
+<tr><th>Dimension</th><th colspan="3">Components <span class="notbold">[ name (unit) ]</span></th></tr>
+<tr><td>xyz</td><td>x (meter)</td><td>y (meter)</td><td>z (meter)</td></tr>
+</table>
+<h3 id="/general/intracellular_ephys">Group: /general/intracellular_ephys</h3>
+<p>Metadata related to intracellular electrophysiology</p>
+
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>.&nbsp;&lt;electrode_X&gt;</td><td>group</td><td>One of possibly many. </td><td> Name should be informative.</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;description</td><td>text</td><td>Recording description, description of electrode (e.g.,  whole-cell, sharp, etc)</td><td> Free-form text (can be from Methods)</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;device</td><td>text</td><td colspan="2">Name(s) of devices in general/devices</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;filtering</td><td>text</td><td colspan="2">Electrode specific filtering.</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;initial_access_resistance</td><td>text</td><td colspan="2">Initial access resistance</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;location</td><td>text</td><td colspan="2">Area, layer, comments on estimation, stereotaxis coordinates (if in vivo, etc)</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;resistance</td><td>text</td><td>Electrode resistance </td><td> unit: Ohm</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;seal</td><td>text</td><td colspan="2">Information about seal used for recording</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;slice</td><td>text</td><td colspan="2">Information about slice used for recording</td><td>no</td></tr>
+<tr><td>.&nbsp;filtering</td><td>text</td><td>Description of filtering used. </td><td> Includes filtering type and parameters, frequency fall- off, etc. If this changes between TimeSeries, filter description should be stored as a text attribute for each TimeSeries.</td><td>no</td></tr>
+</table>
+<h3 id="/general/optogenetics">Group: /general/optogenetics</h3>
+<p>Metadata describing optogenetic stimuluation</p>
+
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>.&nbsp;&lt;site_X&gt;</td><td>group</td><td>One of possibly many groups describing an optogenetic stimuluation site. </td><td> Name is arbitrary but should be meaningful. Name is referenced by OptogeneticSeries</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;description</td><td>text</td><td colspan="2">Description of site</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;device</td><td>text</td><td colspan="2">Name of device in /general/devices</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;excitation_lambda</td><td>text</td><td colspan="2">Excitation wavelength</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;location</td><td>text</td><td colspan="2">Location of stimulation site</td><td>yes</td></tr>
+</table>
+<h3 id="/general/optophysiology">Group: /general/optophysiology</h3>
+<p>Metadata related to optophysiology.</p>
+
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>.&nbsp;&lt;imaging_plane_X&gt;</td><td>group</td><td>One of possibly many groups describing an imaging plane. </td><td> Name is arbitrary but should be meaningful. It is referenced by TwoPhotonSeries and also ImageSegmentation and DfOverF interfaces</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;&lt;channel_X&gt;</td><td>group</td><td>One of possibly many groups storing channel-specific data </td><td> Name is arbitrary but should be meaningful</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;.&nbsp;description</td><td>text</td><td colspan="2">Any notes or comments about the channel</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;.&nbsp;emission_lambda</td><td>text</td><td colspan="2">Emission lambda for channel</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;description</td><td>text</td><td colspan="2">Description of &lt;image_plane_X&gt;</td><td>no</td></tr>
+<tr><td>.&nbsp;.&nbsp;device</td><td>text</td><td colspan="2">Name of device in /general/devices</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;excitation_lambda</td><td>text</td><td colspan="2">Excitation wavelength</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;imaging_rate</td><td>text</td><td colspan="2">Rate images are acquired, in Hz.</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;indicator</td><td>text</td><td colspan="2">Calcium indicator</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;location</td><td>text</td><td colspan="2">Location of image plane</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;manifold</td><td>float32 array; dims: ['height', 'weight', 'xyz']</td><td>Physical position of each pixel. </td><td> "xyz" represents the position of the pixel relative to the defined coordinate space</td><td>recommended</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;.&nbsp;conversion (attr)</i></td><td>float</td><td colspan="2">Multiplier to get from stored values to specified unit (e.g., 1000 for millimeters)</td><td>yes</td></tr>
+<tr><td><i>.&nbsp;.&nbsp;.&nbsp;unit (attr)</i></td><td>text</td><td colspan="2">Base unit that coordinates are stored in (e.g., Meters)</td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;reference_frame</td><td>text</td><td>Describes position and reference frame of manifold based on position of first element in manifold. For example, text description of anotomical location or vectors needed to rotate to common anotomical axis (eg, AP/DV/ML). </td><td> This field is necessary to interpret manifold. If manifold is not present then this field is not required</td><td>recommended</td></tr>
+</table>
+<br />
+<p>Structured dimension(s):</p>
+<table class="dimensions">
+<tr><th>Dimension</th><th colspan="3">Components <span class="notbold">[ name (unit) ]</span></th></tr>
+<tr><td>xyz</td><td>x (Meter)</td><td>y (Meter)</td><td>z (Meter)</td></tr>
+</table>
+<h3 id="/processing">Group: /processing</h3>
+<p> 'Processing' refers to intermediate analysis of the acquired data to make it more amenable to scientific analysis. These are performed using Modules, as defined above. All modules reside in the processing group.</p>
+
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Required</th></tr>
+<tr><td>.&nbsp;<a href="#%3CModule%3E">&lt;Module&gt;</a></td><td>group</td><td>Module.  Name should be descriptive. Stores a collection of related data organized by contained interfaces.  Each interface is a contract specifying content related to a particular type of data.</td><td>no</td></tr>
+</table>
+<h3 id="/stimulus">Group: /stimulus</h3>
+<p> Stimuli are here defined as any signal that is pushed into the system as part of the experiment (eg, sound, video, voltage, etc). Many different experiments can use the same stimuli, and stimuli can be re-used during an experiment. The stimulus group is organized so that one version of template stimuli can be stored and these be used multiple times. These templates can exist in the present file or can be HDF5-linked to a remote library file.</p>
+
+<table class="print-friendly">
+<tr><th>Id</th><th>Type</th><th>Description</th><th>Comment</th><th>Required</th></tr>
+<tr><td>.&nbsp;presentation</td><td>group</td><td colspan="2">Stimuli presented during the experiment. <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;<a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> or subtype</td><td>group</td><td colspan="2"><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> or any subtype. Subtypes include: <a href="#%3CAbstractFeatureSeries%3E">&lt;AbstractFeatureSeries&gt;</a>, <a href="#%3CAnnotationSeries%3E">&lt;AnnotationSeries&gt;</a>, <a href="#%3CCurrentClampSeries%3E">&lt;CurrentClampSeries&gt;</a>, <a href="#%3CCurrentClampStimulusSeries%3E">&lt;CurrentClampStimulusSeries&gt;</a>, <a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a>, <a href="#%3CIZeroClampSeries%3E">&lt;IZeroClampSeries&gt;</a>, <a href="#%3CImageMaskSeries%3E">&lt;ImageMaskSeries&gt;</a>, <a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a>, <a href="#%3CIndexSeries%3E">&lt;IndexSeries&gt;</a>, <a href="#%3CIntervalSeries%3E">&lt;IntervalSeries&gt;</a>, <a href="#%3COpticalSeries%3E">&lt;OpticalSeries&gt;</a>, <a href="#%3COptogeneticSeries%3E">&lt;OptogeneticSeries&gt;</a>, <a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a>, <a href="#%3CRoiResponseSeries%3E">&lt;RoiResponseSeries&gt;</a>, <a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a>, <a href="#%3CSpikeEventSeries%3E">&lt;SpikeEventSeries&gt;</a>, <a href="#%3CTwoPhotonSeries%3E">&lt;TwoPhotonSeries&gt;</a>, <a href="#%3CVoltageClampSeries%3E">&lt;VoltageClampSeries&gt;</a>, <a href="#%3CVoltageClampStimulusSeries%3E">&lt;VoltageClampStimulusSeries&gt;</a></td><td>yes</td></tr>
+<tr><td>.&nbsp;templates</td><td>group</td><td>Template stimuli. </td><td> Time stamps in templates are based on stimulus design and are relative to the beginning of the stimulus. When templates are used, the stimulus instances must convert presentation times to the experiment's time reference frame. <em>(Automatically created)</em></td><td>yes</td></tr>
+<tr><td>.&nbsp;.&nbsp;<a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> or subtype</td><td>group</td><td colspan="2"><a href="#%3CTimeSeries%3E">&lt;TimeSeries&gt;</a> or any subtype. Subtypes include: <a href="#%3CAbstractFeatureSeries%3E">&lt;AbstractFeatureSeries&gt;</a>, <a href="#%3CAnnotationSeries%3E">&lt;AnnotationSeries&gt;</a>, <a href="#%3CCurrentClampSeries%3E">&lt;CurrentClampSeries&gt;</a>, <a href="#%3CCurrentClampStimulusSeries%3E">&lt;CurrentClampStimulusSeries&gt;</a>, <a href="#%3CElectricalSeries%3E">&lt;ElectricalSeries&gt;</a>, <a href="#%3CIZeroClampSeries%3E">&lt;IZeroClampSeries&gt;</a>, <a href="#%3CImageMaskSeries%3E">&lt;ImageMaskSeries&gt;</a>, <a href="#%3CImageSeries%3E">&lt;ImageSeries&gt;</a>, <a href="#%3CIndexSeries%3E">&lt;IndexSeries&gt;</a>, <a href="#%3CIntervalSeries%3E">&lt;IntervalSeries&gt;</a>, <a href="#%3COpticalSeries%3E">&lt;OpticalSeries&gt;</a>, <a href="#%3COptogeneticSeries%3E">&lt;OptogeneticSeries&gt;</a>, <a href="#%3CPatchClampSeries%3E">&lt;PatchClampSeries&gt;</a>, <a href="#%3CRoiResponseSeries%3E">&lt;RoiResponseSeries&gt;</a>, <a href="#%3CSpatialSeries%3E">&lt;SpatialSeries&gt;</a>, <a href="#%3CSpikeEventSeries%3E">&lt;SpikeEventSeries&gt;</a>, <a href="#%3CTwoPhotonSeries%3E">&lt;TwoPhotonSeries&gt;</a>, <a href="#%3CVoltageClampSeries%3E">&lt;VoltageClampSeries&gt;</a>, <a href="#%3CVoltageClampStimulusSeries%3E">&lt;VoltageClampStimulusSeries&gt;</a></td><td>yes</td></tr>
+</table>
+<h2 id="Extending_the_format">Extending the format</h2>
+
+
+        <p>
+        The data organization presented in this document constitutes the <i>core</i> NWB
+        format.  Extensibility is handled by allowing users to store additional
+        data as necessary using new datasets, attributes or groups.  There are
+        two ways to document these additions.  The first is to add an attribute
+        "neurodata_type" with value the string "Custom" to the additional groups
+        or datasets, and provide documentation to describe the extra data if
+        it is not clear from the context what the data represent.  This method
+        is simple but does not include a consistant way to describe
+        the additions.  The second method is to write an
+        <i>extension</i> to the format.  With this method, the additions are
+        describe by the extension and attribute "schema_id" is set to
+      the schema_id associated with the extension.
+      Extensions to the format are written
+        using the same specification language that is used to define the
+        core format.  Creating an extension allows adding the new data to the file
+        through the API, validating files containing extra data, and also
+        generating documentation for the additions.
+        Popular extensions can be proposed
+        and added to the official format specification.
+        Writing and using extensions are described in the API documentation.
+        Both methods allow extensibility without breaking backward compatibility.
+        </p>
+        
+<h2 id="Acknowledgements">Acknowledgements</h2>
+
+<p style="margin-bottom: 0in">The Neurodata Without Borders:
+Neurophysiology Initiative is funded by GE, the Allen Institute for
+Brain Science, the Howard Hughes Medical Institute (HHMI), The Kavli
+Foundation and the International Neuroinformatics Coordinating
+Facility. Our founding scientific partners are the Allen Institute,
+the Svoboda Lab at the Janelia Research Campus of HHMI, the Meister
+Lab at the California Institute of Technology, the Buzsaki Lab at
+New York University School of Medicine, and the University of
+California, Berkeley. Ovation.io is our founding development partner.
+Ken Harris at University College London provided invaluable input and
+advice.</p>
+       
+<h2 id="Change_history">Change history</h2>
+
+
+<p style="margin-bottom: 0in">1.0.6, April 8, 2017</p>
+Minor fixes:
+ <ul>
+ <li>Modify &lt;IntervalSeries&gt;/ documentation to use html entities for &lt;
+ and &gt;.</li>
+ <li>Fix indentation of unit attribute data_type, and conversion attribute description in
+/general/optophysiology/&lt;imaging_plane_X&gt;/manifold.</li>
+<li>Fix typos in &lt;AnnotationSeries&gt;/ conversion, resolution and unit attributes.</li>
+<li>Update documentation for IndexSeries to reflect more general usage.</li>
+<li>Change to all numerical version number to remove warning message when installing
+ using setuptools.</li>
+</ul>
+ <p style="margin-bottom: 0in"></p><br/>
+
+ <p style="margin-bottom: 0in">1.0.5i_beta, Dec 6, 2016</p>
+ <p>Remove some comments.  Modify author string in info section.
+ </p>
+ <p style="margin-bottom: 0in"></p><br/>
+
+<p style="margin-bottom: 0in">1.0.5h_beta, Nov 30, 2016</p>
+ <p>Add dimensions to /acquisition/images/&lt;image_X&gt;
+ </p>
+ <p style="margin-bottom: 0in"></p><br/>
+
+ <p style="margin-bottom: 0in">1.0.5g_beta, Oct 7, 2016</p>
+ <p>Replace group options: autogen: {"type": "create"} and
+ "_closed": True with
+ "_properties": {"create": True} and "_properties": {"closed": True}.
+ This done to make the specification language more
+ consistent by having these group properties specified in one place
+ ("_properties" dictionary).</p>
+ <p style="margin-bottom: 0in"></p><br/>
+
+ <p style="margin-bottom: 0in">1.0.5f_beta, Oct 3, 2016</p>
+ <p>Minor fixes to allow validation of schema using json-schema
+ specification in file "meta-schema.py" using utility
+ "check_schema.py".</p>
+ <p style="margin-bottom: 0in"></p><br/>
+ 
+ <p style="margin-bottom: 0in">1.0.5e_beta, Sept 22, 2016</p>
+ <p>Moved definition of &lt;Module&gt;/ out of /processing group to allow
+ creating subclasses of Module.  This is useful for making custom
+ Module types that specified required interfaces.  Example of
+ this is in python-api/examples/create_scripts/module-e.py and
+ the extension it uses (extensions/e-module.py).</p>
+ <p>Fixed malformed html in nwb_core.py documentation.</p>
+ <p>Changed html generated by doc_tools.py to html5 and fixed so
+ passes validation at https://validator.w3.org.</p>
+ <p style="margin-bottom: 0in"></p><br/>
+
+ <p style="margin-bottom: 0in">1.0.5d_beta, Sept 6, 2016</p>
+ <p>Changed ImageSeries img_mask dimensions to:<br />
+ "dimensions": ["num_y","num_x"]<br />
+ to match description.</p>
+ <p style="margin-bottom: 0in"></p><br/>
+
+ <p style="margin-bottom: 0in">1.0.5c_beta, Aug 17, 2016</p>
+ <p>Change IndexSeries to allow linking to any form of TimeSeries, not just
+ an ImageSeries</p>
+ <p style="margin-bottom: 0in"></p><br/>
+ <p style="margin-bottom: 0in">1.0.5b_beta, Aug 16, 2016</p>
+ <ul>
+<li>Make 'manifold' and 'reference_frame' (under /general/optophysiology)
+recommended rather than required.</li>
+<li>In all cases, allow subclasses of a TimeSeries to fulfill validation requirements
+ when an instance of TimeSeries is required.</li>
+<li>Change unit attributes in VoltageClampSeries series datasets from
+required to recommended.</li>
+<li>Remove 'const'=True from TimeSeries attributes in AnnotationSeries and IntervalSeries.</li>
+<li>Allow the base TimeSeries class to store multi-dimensional arrays in 'data'.
+  A user is expected to describe the contents of 'data' in the comments
+  and/or description fields.</li>
+</ul>
+<p style="margin-bottom: 0in"></p><br/>
+
+<p style="margin-bottom: 0in">1.0.5a_beta, Aug 10, 2016</p>
+<p>Expand class of Ids allowed in TimeSeries missing_fields
+attribute to allow custom uses.<br />
+<p style="margin-bottom: 0in"></p><br/>
+
+<p style="margin-bottom: 0in">1.0.5_beta Aug 2016</p>
+<p>Allow subclasses to be used for merges instead of base class (specified by
+'merge+' in format specification file).<br />
+Use 'neurodata_type=Custom' to flag additions that are not describe
+by a schema.<br />
+Exclude TimeSeries timestamps and starting time from under
+/stimulus/templates<br />
+<p style="margin-bottom: 0in"></p><br/>
+
+<p style="margin-bottom: 0in">1.0.4_beta June 2016</p>
+<p>Generate documentation directly from format specification file."<br />
+Change ImageSeries external_file to an array.<br />
+Made TimeSeries description and comments recommended.<br />
+<p style="margin-bottom: 0in"></p><br/>
+
+<p style="margin-bottom: 0in">1.0.3 April, 2016</p>
+<p>Renamed "ISI_Retinotopy" to "ISIRetinotopy"<br />
+Change ImageSeries external_file to an array.  Added attribute
+starting_frame.<br />
+<p style="margin-bottom: 0in">Added IZeroClampSeries.</p>
+<p style="margin-bottom: 0in"></p><br/>
+
+<p style="margin-bottom: 0in">1.0.2 February, 2016</p>
+<p style="margin-bottom: 0in">Fixed documentation error, updating
+'neurodata_version' to 'nwb_version'</p>
+<p style="margin-bottom: 0in">Created ISI_Retinotopy interface</p>
+<p style="margin-bottom: 0in">In ImageSegmentation module, moved
+pix_mask::weight attribute to be its own dataset, named
+pix_mask_weight. Attribute proved inadequate for storing sufficiently
+large array data for some segments</p>
+<p style="margin-bottom: 0in">Moved 'gain' field from
+Current/VoltageClampSeries to parent PatchClampSeries, due need of
+stimuli to sometimes store gain</p>
+<p style="margin-bottom: 0in">Added Ken Harris to the
+Acknowledgements section</p>
+<p style="margin-bottom: 0in"></p><br/>
+
+<p style="margin-bottom: 0in">1.0.1 October 7th, 2015</p>
+<p style="margin-bottom: 0in">Added 'required' field to tables in the
+documentation, to indicate if group/dataset/attribute is required,
+standard or optional</p>
+<p style="margin-bottom: 0in">Obsoleted 'file_create_date' attribute
+'modification_time' and made file_create_date a text array</p>
+<p style="margin-bottom: 0in">Removed 'resistance_compensation' from
+CurrentClampSeries due being duplicate of another field</p>
+<p style="margin-bottom: 0in">Upgraded TwoPhotonSeries::imaging_plane
+to be a required value</p>
+<p style="margin-bottom: 0in">Removed 'tags' attribute to group
+'epochs' as it was fully redundant with the 'epoch/tags' dataset</p>
+<p style="margin-bottom: 0in">Added text to the documentation stating
+that specified sizes for integer values are recommended sizes, while
+sizes for floats are minimum sizes</p>
+<p style="margin-bottom: 0in">Added text to the documentation stating
+that, if the TimeSeries::data::resolution attribute value is unknown
+then store a NaN</p>
+<p style="margin-bottom: 0in">Declaring the following groups as
+required (this was implicit before)
+</p>
+<p style="margin-bottom: 0in"></p><br/>
+
+<p style="margin-bottom: 0in">acquisition/</p>
+<p style="margin-bottom: 0in">_ images/</p>
+<p style="margin-bottom: 0in">_ timeseries/</p>
+<p style="margin-bottom: 0in">analysis/</p>
+<p style="margin-bottom: 0in">epochs/</p>
+<p style="margin-bottom: 0in">general/</p>
+<p style="margin-bottom: 0in">processing/</p>
+<p style="margin-bottom: 0in">stimulus/</p>
+<p style="margin-bottom: 0in">_ presentation/</p>
+<p style="margin-bottom: 0in">_ templates/</p>
+<p style="margin-bottom: 0in"></p><br/>
+
+<p style="margin-bottom: 0in">This is to ensure consistency between
+.nwb files, to provide a minimum expected structure, and to avoid
+confusion by having someone expect time series to be in places
+they're not. I.e., if 'acquisition/timeseries' is not present,
+someone might reasonably expect that acquisition time series might
+reside in 'acquisition/'. It is also a subtle reminder about what the
+file is designed to store, a sort of built-in documentation.
+Subfolders in 'general/' are only to be included as needed. Scanning
+'general/' should provide the user a quick idea what the experiment
+is about, so only domain-relevant subfolders should be present (e.g.,
+'optogenetics' and 'optophysiology'). There should always be a
+'general/devices', but it doesn't seem worth making it mandatory
+without making all subfolders mandatory here.
+</p>
+<p style="margin-bottom: 0in"></p><br/>
+
+<p style="margin-bottom: 0in">1.0.0 September 28<sup>th</sup>, 2015</p>
+<p style="margin-bottom: 0in">Convert document to .html</p>
+<p style="margin-bottom: 0in"></p>
+
+<p style="margin-bottom: 0in">TwoPhotonSeries::imaging_plane was
+upgraded to mandatory to help enforce inclusion of important metadata
+in the file.</p>
+
+<h2 id="Design_notes">Design notes</h2>
+
+<p style="margin-bottom: 0in">The listed size of integers is the
+suggested size. What's important for integers is simply that the
+integer is large enough to store the required data, and preferably
+not larger. For floating point, double is required for timestamps,
+while floating point is largely sufficient for other uses. This is
+why doubles (float64) are stated in some places. Because floating
+point sizes are provided, integer sizes are provided as well.</p>
+<p style="margin-bottom: 0in"><br/>
+
+<p style="margin-bottom: 0in"><b>Why do timestamps_link and data_link
+record linking between datasets, but links between epochs and
+timeseries are not recorded?</b></p>
+<p>Epochs have a hardlink to entire timeseries (ie, the HDF5 group). If 100
+epochs link to a time series, there is only one time series. The data
+and timestamps within it are not shared anywhere (at least from the
+epoch linking). An epoch is an entity that is put in for convenience and annotation so
+there isn't necessarily an important association between what epochs
+link to what time series (all epochs could link to all time series).</p>
+
+<p>The timestamps_link and data_link fields refer to links made between time
+series, such as if timeseries A and timeseries B, each having
+different data (or time) share time (or data). This is much more
+important information as it shows structural associations in the
+data.</p>
+        
+</body>
+</html>
